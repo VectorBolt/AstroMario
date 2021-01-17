@@ -1,11 +1,12 @@
 /*
  * Player.java
  * This class represents the player object
- * It contains all the properties of a player
+ * It contains all the properties and methods of a player
  * @author Avneesh Verma
  * @version 1.0 January 5, 2020
  */
 
+import java.awt.*;
 // Image imports
 import java.io.File;
 import java.io.IOException;
@@ -18,16 +19,22 @@ public class Player {
 
   // Movement
   int x, y, w, h;
-  int speed, jumpSpeed, vX, vY;
+  int speed, jumpSpeed;
+  int vX;
+  double vY;
 
   // Images
   BufferedImage[] images = new BufferedImage[12];
   BufferedImage currentImage;
 
   // Player States
-  boolean facingRight, isWalking, isJumping, isSwimming;
+  boolean facingRight, isWalking, isJumping, isSwimming, isInvulnerable;
   double walkFrame;
+  int invulnerabilityCounter;
 
+  // Health
+  int health;
+  Rectangle hitbox;
 
   /*
    * CONSTRUCTOR
@@ -45,7 +52,7 @@ public class Player {
     this.speed = speed;
     this.jumpSpeed = jumpSpeed; 
     this.vX = 0;
-    this.vY = 0;
+    this.vY = 0.0;
 
     // Initialize images
     try {
@@ -60,13 +67,20 @@ public class Player {
     this.isWalking = false;
     this.isJumping = false;
     this.isSwimming = false;
+    this.isInvulnerable = false;
     this.walkFrame = 0.0; // To iterate over each frame when walking
+    this.invulnerabilityCounter = 0;
+
+    // health
+    this.hitbox = new Rectangle(this.x, this.y, this.w, this.h);
+    this.health = 3;
 
   }
 
   /*
    * getState
-   * This method chooses the correct image based on the currentPlayerState
+   * This method sets the correct currentImage,
+   * based on the current state of the player
    */
   public void getState() {
 
@@ -99,4 +113,6 @@ public class Player {
     }
 
   }
+
+
 }
