@@ -1,21 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class BasicGun extends Gun {
+public class MachineGun extends Gun {
   
-  public BasicGun(Player player) {
+  public MachineGun(Player player) {
     
-    this.bulletDamage = 10;
-    this.shotDelay = 100;
-    this.reloadDelay = 750;
-    this.numBullets = 7;
+    this.bulletDamage = 5;
+    this.reloadDelay = 1000;
+    this.numBullets = 9999;
     this.bulletLocs = new int[numBullets][numBullets]; // {{x1, y1}, {x2, y2}, etc}
     this.bulletVisible = new boolean[numBullets];
     this.isShooting = false;
     this.bulletVelocities = new int[numBullets];
     this.bulletBoxes = new Rectangle[numBullets];
-    this.bulletW = 15;
-    this.bulletH = 9;
+    this.bulletW = 10;
+    this.bulletH = 6;
     this.curBullet = 0;
     
     // Initialize individual bullets

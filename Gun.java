@@ -1,22 +1,25 @@
-
 import javax.swing.*;
 import java.awt.*;
 
 public abstract class Gun {
 
-  String gunType;
+  int bulletDamage;
+  int chargingTime;
+  int beamDuration;
+  boolean[] charging;
+  String bulletType;
   int shotDelay;
+  int reloadDelay;
   int numBullets;
-  int[][] bulletLocs; // {{x1, y1}, {x2, y2}, …}
+  int[][] bulletLocs; // {{x1, y1}, {x2, y2}, etc}
   boolean[] bulletVisible;
+  boolean isShooting;
   int[] bulletVelocities;
   Rectangle[] bulletBoxes;
   int curBullet;
-
   int bulletW;
   int bulletH;
-
-
+  
   public void shoot(Player player) {
     if (this.curBullet < this.numBullets) {
       this.bulletVisible[this.curBullet] = true;
@@ -33,9 +36,11 @@ public abstract class Gun {
       this.bulletBoxes[this.curBullet] = new Rectangle(this.bulletLocs[this.curBullet][0],
                                                        this.bulletLocs[this.curBullet][1], this.bulletW, this.bulletH);
       this.curBullet++;
-      
     }
-    
   }
-
+  
+  public Boolean reload(Player player) {
+    this.curBullet = 0;
+    return false;
+  }
 }
