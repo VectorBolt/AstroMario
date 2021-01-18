@@ -1,11 +1,12 @@
-/*
- * Player.java
+/**
+ * [Player.java]
  * This class represents the player object
  * It contains all the properties and methods of a player
- * @author Avneesh Verma
+ * @author Avneesh Verma and Jeffrey Xu
  * @version 1.0 January 5, 2020
  */
 
+/* Imports */
 import java.awt.*;
 // Image imports
 import java.io.File;
@@ -15,8 +16,7 @@ import java.awt.image.BufferedImage;
 
 public class Player {
   
-  // VARIABLES
-  
+  /* VARIABLES */
   // Movement
   int x, y, w, h;
   int speed, jumpSpeed;

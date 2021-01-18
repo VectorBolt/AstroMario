@@ -1,12 +1,13 @@
-/*
- * Goomba.java
+/**
+ * [Goomba.java]
  * This class represents a goomba enemy.
  * This is the most basic enemy.
  * It can only move left and right.
- * @author Avneesh Verma
+ * @author Avneesh Verma and Jeffrey Xu
  * @version 1.0 January 5, 2020
  */
 
+/* Imports */
 import java.awt.*;
 // Image imports
 import java.io.File;
@@ -15,7 +16,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
 public class Goomba extends Enemy {
-  
   public Goomba(int x, int y, int walkRange) {
     this.x = x;
     this.y = y;
