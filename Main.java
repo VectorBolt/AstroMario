@@ -163,7 +163,7 @@ public class Main {
           beamFade[i] += 20;
           // If an enemy is hit
           for (int j = 0; j < goombas.length; j++) {
-            if (energyGun.bulletBoxes[i] != null && isAlive && energyGun.bulletBoxes[i].intersects(goombas[j].hitbox)) {
+            if (energyGun.bulletBoxes[i] != null && goombas[j].health > 0 && energyGun.bulletBoxes[i].intersects(goombas[j].hitbox)) {
               if (energyGun.bulletVisible[i]) {
                 goombas[j].health -= energyGun.bulletDamage;
               }
@@ -234,7 +234,6 @@ public class Main {
       
       platformCollision();
       
-      
       // Iterate over each frame of walking
       if (player1.isWalking && !player1.isJumping) {
         player1.walkFrame += 0.3;
@@ -258,7 +257,7 @@ public class Main {
   /**
    * moveBullets
    * Moves bullets, detects enemy hits, and detects exit screen
-   * @param 
+   * @param type of gun
    */
   public static void moveBullets(Gun guntype) {
     for (int i = 0; i < guntype.numBullets; i++) {  
@@ -274,7 +273,7 @@ public class Main {
       
       // If an enemy is hit
       for (int j = 0; j < goombas.length; j++) {
-        if (guntype.bulletBoxes[i] != null && isAlive && guntype.bulletBoxes[i].intersects(goombas[j].hitbox)) {
+        if (guntype.bulletBoxes[i] != null && goombas[j].health > 0 && guntype.bulletBoxes[i].intersects(goombas[j].hitbox)) {
           if (guntype.bulletVisible[i]) {
             goombas[j].health -= guntype.bulletDamage;
           }
@@ -390,7 +389,7 @@ public class Main {
       // Display Information
       g.setColor(Color.WHITE);
       g.setFont(new Font("Helvetica", Font.BOLD, 30));
-      g.drawString("Bullets: " + Integer.toString(basicGun.numBullets - basicGun.curBullet), 3*FRAME_WIDTH/4, 100);
+      g.drawString("Bullets: " + Integer.toString(curGun.numBullets - curGun.curBullet), 3*FRAME_WIDTH/4, 100);
       g.drawString("Health: " + Integer.toString(player1.health), FRAME_WIDTH/4, 100);
       if (reloading) {
         g.drawString("Reloading...", 3*FRAME_WIDTH/4, 150);
@@ -429,13 +428,13 @@ public class Main {
       }
       
       // Fire
-      if (key == KeyEvent.VK_SPACE) {   
+      if (key == KeyEvent.VK_SPACE && !reloading) {   
         shotGap[0] += 20;
         curGun.isShooting = true;
       }
       
       // Reload
-      if (key == KeyEvent.VK_K && curGun.numBullets - curGun.curBullet != curGun.numBullets && !reloading) {
+      if (key == KeyEvent.VK_K && curGun.numBullets - curGun.curBullet != curGun.numBullets && !reloading && !curGun.isShooting) {
         reloadDelay = new Timer(curGun.reloadDelay, new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             reloading = curGun.reload(player1);
@@ -462,11 +461,18 @@ public class Main {
     
     public void keyReleased(KeyEvent e) {
       int key = e.getKeyCode();
-      
+      // Stop moving when key
       if ((key == KeyEvent.VK_A && !player1.facingRight) || (key == KeyEvent.VK_D && player1.facingRight)) {
         player1.vX = 0;
         player1.isWalking = false;
         player1.walkFrame = 0;
+      }
+      // Reset shot delay for basic gun
+      else if (key == KeyEvent.VK_SPACE) {
+        curGun.isShooting = false;
+        if (curGun == basicGun) {
+          shotGap[0] = basicGun.shotDelay;
+        }
       }
     }
     

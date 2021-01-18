@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public abstract class Gun {
-
+  
   int bulletDamage;
   int chargingTime;
   int beamDuration;
@@ -24,11 +24,12 @@ public abstract class Gun {
     if (this.curBullet < this.numBullets) {
       this.bulletVisible[this.curBullet] = true;
       this.bulletLocs[this.curBullet][1] = player.y + player.h/2;
+      this.bulletVelocities[this.curBullet] = 20;
       if (player.facingRight) {
         this.bulletLocs[this.curBullet][0] = player.x + player.w;
         this.bulletVelocities[this.curBullet] *= 1; // Move to the right
       }
-      else {
+      else if (!player.facingRight) {
         this.bulletLocs[this.curBullet][0] = player.x;
         this.bulletVelocities[this.curBullet] *= -1; // Move to the left 
       }
