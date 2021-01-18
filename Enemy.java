@@ -1,10 +1,11 @@
-/*
- * Enemy.java
+/**
+ * [Enemy.java]
  * This class represents an abstract enemy
- * @author Avneesh Verma
+ * @author Avneesh Verma and Jeffrey Xu
  * @version 1.0 January 5, 2020
  */
 
+/* Imports */
 import java.awt.*;
 // Image imports
 import java.io.File;
@@ -24,7 +25,7 @@ public abstract class Enemy {
   Rectangle hitbox;
   BufferedImage[] images = new BufferedImage[2];
   double walkFrame;
-
+  
   /*
    * collision
    * This method checks if the player collided with the enemy.
@@ -38,6 +39,5 @@ public abstract class Enemy {
       player.isInvulnerable = true;
     }
   }
-
+  
 }
-

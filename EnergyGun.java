@@ -1,23 +1,35 @@
+/**
+ * [EnergyGun.java]
+ * This class represents the energy gun
+ * The energy gun shoots a large beam that kills everything in its way
+ * @author Jeffrey Xu and Avneesh Verma
+ * @version 1.0 January 18, 2020
+ */
+
+/* Imports */
 import javax.swing.*;
 import java.awt.*;
 
 public class EnergyGun extends Gun {
-  
   public EnergyGun(Player player) {
     
-    this.bulletDamage = 9999;  // I guess we make it oneshot
+    /* VARIABLES */
+    // Location
+    this.bulletLocs = new int[numBullets][numBullets]; // {{x1, y1}, {x2, y2}, etc}
+    this.bulletW = 867;
+    this.bulletH = 40;
+    // Shooting and reloading
     this.shotDelay = 3000;
     this.reloadDelay = 3000;
     this.beamDuration = 1000;
     this.chargingTime = 2000;
-    this.numBullets = 3;
-    this.bulletLocs = new int[numBullets][numBullets]; // {{x1, y1}, {x2, y2}, etc}
-    this.bulletVisible = new boolean[numBullets];
     this.isShooting = false;
     this.charging = new boolean[numBullets];
+    // More properties
+    this.numBullets = 3;
+    this.bulletDamage = 9999;  // Oneshots the enemy
+    this.bulletVisible = new boolean[numBullets];
     this.bulletBoxes = new Rectangle[numBullets];
-    this.bulletW = 2000;
-    this.bulletH = 40;
     this.curBullet = 0;
     
     // Initialize individual bullets
@@ -27,7 +39,14 @@ public class EnergyGun extends Gun {
       this.bulletVisible[i] = false;
     }
   }
-  // Specialized shoot method for energy gun
+  
+  /**
+   * shoot
+   * Specialized shoot method for energy gun
+   * Begins the shooting process of the energy gun by charging the shot
+   * @param the instance of player
+   * return true;
+   */
   @Override
   public void shoot(Player player) {
     if (this.curBullet < this.numBullets) {
