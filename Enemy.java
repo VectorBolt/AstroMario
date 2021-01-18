@@ -1,10 +1,11 @@
-/*
- * Enemy.java
+/**
+ * [Enemy.java]
  * This class represents an abstract enemy
- * @author Avneesh Verma
+ * @author Avneesh Verma and Jeffrey Xu
  * @version 1.0 January 5, 2020
  */
 
+/* Imports */
 import java.awt.*;
 // Image imports
 import java.io.File;
@@ -40,4 +41,3 @@ public abstract class Enemy {
   }
   
 }
-

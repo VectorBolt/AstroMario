@@ -1,10 +1,11 @@
-/*
- * [SpacePlatformer.java]
- * This program has a scrolling space background.
- * @author Avneesh Verma
- * @version 1.0 December 23, 2020
+/**
+ * [Main.java]
+ * This program is the main file where the game runs
+ * @author Avneesh Verma and Jeffrey Xu
+ * @version 1.0 January 18, 2020
  */
 
+/* Imports */
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -151,6 +152,7 @@ public class Main {
       // Energy gun bullet
       for (int i = 0; i < energyGun.numBullets; i++) {
         if (energyGun.charging[i]) {
+          energyGun.isShooting = true;
           chargeLength[i] += 20;
         }
         if (chargeLength[i] >= energyGun.chargingTime) {
@@ -174,6 +176,7 @@ public class Main {
             energyGun.bulletVisible[i] = false;
             beamFade[i] = 0;
             shotGap[1] = energyGun.shotDelay;
+            energyGun.isShooting = false;
           }
         }
       }
@@ -304,7 +307,7 @@ public class Main {
       }
       
       // If the player bumps their head on the platform from below
-      else if (player1.y <= platforms[i][1] + platforms[i][3] && player1.y > platforms[i][1]
+      else if (player1.y < platforms[i][1] + platforms[i][3] && player1.y > platforms[i][1]
                  && player1.x + player1.w >= platforms[i][0] && player1.x <= platforms[i][0] + platforms[i][2]) {
         
         player1.y = platforms[i][1] + platforms[i][3];
@@ -428,7 +431,7 @@ public class Main {
       }
       
       // Fire
-      if (key == KeyEvent.VK_SPACE && !reloading) {   
+      if (key == KeyEvent.VK_SPACE && !reloading && curGun.curBullet < curGun.numBullets) {   
         shotGap[0] += 20;
         curGun.isShooting = true;
       }
