@@ -59,8 +59,17 @@ public class Main {
 
   // Player
   static Player player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -30);
-  static BasicGun basicGun = new BasicGun();
 
+  // Guns
+  static Gun basicGun = new BasicGun(player1);
+  static Gun energyGun = new EnergyGun(player1);
+  static Gun machineGun = new MachineGun(player1);
+  static Gun curGun = basicGun;
+  static Timer reloadDelay;
+  static boolean reloading = false;
+  static int[] shotGap = {basicGun.shotDelay,energyGun.shotDelay};
+  static int[] beamFade = {0,0,0};
+  static int[] chargeLength = {0,0,0};
 
   // MAIN METHOD
   public static void main(String[] args) throws Exception {
@@ -76,15 +85,6 @@ public class Main {
     // Images
     background1 = ImageIO.read(new File("space copy.png"));
     background2 = ImageIO.read(new File("space copy flipped.png"));
-
-    // Bullets
-    for (int i = 0; i < basicGun.numBullets; i++) {
-      basicGun.bulletLocs[i][0] = player1.x + player1.w;
-      basicGun.bulletLocs[i][1] = player1.y/2;
-      basicGun.bulletVisible[i] = false;
-      basicGun.bulletVelocities[i] = 20;
-    }
-
 
     window.setVisible(true);
     runGameLoop();
@@ -144,27 +144,56 @@ public class Main {
 	}
       }
 
-      // Move Bullets
-      for (int i = 0; i < basicGun.numBullets; i++) {
-	if (basicGun.bulletVisible[i]) {
-	  basicGun.bulletLocs[i][0] += basicGun.bulletVelocities[i];
-	  basicGun.bulletBoxes[i].setLocation(basicGun.bulletLocs[i][0], basicGun.bulletLocs[i][1]);
-	}
+      /* Gun bullets */
+      // Basic gun bullets
+      moveBullets(basicGun);
+      
+      // Energy gun bullet
+      for (int i = 0; i < energyGun.numBullets; i++) {
+        if (energyGun.charging[i]) {
+          chargeLength[i] += 20;
+        }
+        if (chargeLength[i] >= energyGun.chargingTime) {
+          energyGun.bulletVisible[i] = true;
+          energyGun.charging[i] = false;
+          chargeLength[i] = 0;  
+        }
+        else if (energyGun.bulletVisible[i]) {
+          energyGun.bulletBoxes[i] = new Rectangle(energyGun.bulletLocs[i][0], energyGun.bulletLocs[i][1], energyGun.bulletW, energyGun.bulletH);  // Update hitbox
+          beamFade[i] += 20;
+          // If an enemy is hit
+	  for (int j = 0; j < goombas.length; j++) {
+            if (energyGun.bulletBoxes[i] != null && isAlive && energyGun.bulletBoxes[i].intersects(goombas[j].hitbox)) {
+              if (energyGun.bulletVisible[i]) {
+                goombas[j].health -= energyGun.bulletDamage;
+	      }
+            }
+          }
+          // Make beam fade after set time
+          else if (beamFade[i] >= energyGun.beamDuration) {
+            energyGun.bulletVisible[i] = false;
+            beamFade[i] = 0;
+            shotGap[1] = energyGun.shotDelay;
+          }
+        }
+      }
+      // Machine gun bullets
+      moveBullets(machineGun);
 
-	// Remove Bullet when off-screen
-	if (basicGun.bulletLocs[i][0] > FRAME_WIDTH || basicGun.bulletLocs[i][0] < 0) {
-	  basicGun.bulletVisible[i] = false;
-	}
-
-	// If an enemy is hit
-	for (int j = 0; j < goombas.length; j++) {
-	  if (basicGun.bulletBoxes[i] != null && goombas[j].health > 0 && basicGun.bulletVisible[i]
-	      && basicGun.bulletBoxes[i].intersects(goombas[j].hitbox)) {
-	    goombas[j].health -= 1;
-	    basicGun.bulletVisible[i] = false;
-	  }
-	}
-
+      // Shooting
+      // Basic gun shoot
+      if (curGun == basicGun && shotGap[0] >= basicGun.shotDelay && basicGun.isShooting) {
+        basicGun.shoot(player1);
+        shotGap[0] = 0;
+      }
+      // Energy gun shoot
+      else if (curGun == energyGun && shotGap[1] >= energyGun.shotDelay && energyGun.isShooting) {
+        energyGun.shoot(player1);
+        shotGap[1] = 0;
+      }
+      // Machine gun shoot
+      else if (curGun == machineGun && machineGun.isShooting) {
+        machineGun.shoot(player1); 
       }
 
       // When in water
@@ -224,9 +253,37 @@ public class Main {
       }
 
     }
-  }
+  }  //runGameLoop method end
 
-
+  /**
+   * moveBullets
+   * Moves bullets, detects enemy hits, and detects exit screen
+   * @param 
+   */
+  public static void moveBullets(Gun guntype) {
+    for (int i = 0; i < guntype.numBullets; i++) {  
+      if (guntype.bulletVisible[i]) {
+        guntype.bulletLocs[i][0] += guntype.bulletVelocities[i];
+        guntype.bulletBoxes[i].setLocation(guntype.bulletLocs[i][0], guntype.bulletLocs[i][1]);
+      }
+      
+      // Remove Bullet when off-screen
+      if (guntype.bulletLocs[i][0] > FRAME_WIDTH || guntype.bulletLocs[i][0] < 0) {
+        guntype.bulletVisible[i] = false;
+      }
+      
+      // If an enemy is hit
+      for (int j = 0; j < goombas.length; j++) {
+      	if (guntype.bulletBoxes[i] != null && isAlive && guntype.bulletBoxes[i].intersects(goombas[j].hitbox)) {
+		      if (guntype.bulletVisible[i]) {
+            goombas[j].health -= guntype.bulletDamage;
+    	    }
+      	  guntype.bulletVisible[i] = false;
+      	}
+      }
+    }
+  }  // moveBullets method end
+	
   /*
    * platformCollision
    * This method iterates over each platform and checks if the player is touching it.
@@ -254,10 +311,8 @@ public class Main {
 	player1.y = platforms[i][1] + platforms[i][3];
 	player1.vY = 0;
       }
-
     }
-  }
-
+  }  // platformCollision method end
 
   // Graphics Panel
   static class GraphicsPanel extends JPanel {
@@ -286,6 +341,7 @@ public class Main {
       // Draw Player
       g.drawImage(player1.currentImage, player1.x, player1.y, this);
 
+      // Draw goombas
       for (int i = 0; i < goombas.length; i++) {
 	if (goombas[i].health > 0) {
 	  g.drawImage(goombas[i].images[(int)goombas[i].walkFrame], goombas[i].x, goombas[i].y, this);
@@ -300,25 +356,47 @@ public class Main {
 	g.fillRect(platforms[i][0], platforms[i][1], platforms[i][2], platforms[i][3]);
       }
       
-
-      // Draw Bullets
+      /* Draw Bullets */
+      // Basic gun
       g.setColor(Color.RED);
       for (int i = 0; i < basicGun.numBullets; i++) {
-	if (basicGun.bulletVisible[i]) {
-	  g.fillOval(basicGun.bulletLocs[i][0], basicGun.bulletLocs[i][1], basicGun.bulletW, basicGun.bulletH);
-	}
+        if (basicGun.bulletVisible[i]) {
+          g.fillOval(basicGun.bulletLocs[i][0], basicGun.bulletLocs[i][1], basicGun.bulletW, basicGun.bulletH);
+        }
       }
+      // Energy gun
+      g.setColor(Color.BLUE);
+      for (int i = 0; i < energyGun.numBullets; i++) {
+        if (energyGun.bulletVisible[i]) {
+          energyGun.bulletLocs[i][1] = player1.y + player1.h/5;
+          if (player1.facingRight) {
+            energyGun.bulletLocs[i][0] = player1.x + player1.w;
+          }
+          else if (!player1.facingRight) {
+            energyGun.bulletLocs[i][0] = player1.x - energyGun.bulletW;
+            
+          }
+          g.fillRect(energyGun.bulletLocs[i][0], energyGun.bulletLocs[i][1], energyGun.bulletW, energyGun.bulletH);
+        }
+      }
+      // Machine gun
+      g.setColor(Color.YELLOW);
+      for (int i = 0; i < machineGun.numBullets; i++) {
+        if (machineGun.bulletVisible[i]) {
+          g.fillRect(machineGun.bulletLocs[i][0], machineGun.bulletLocs[i][1], machineGun.bulletW, machineGun.bulletH);
+        }
+      }      
 
       // Display Information
       g.setColor(Color.WHITE);
       g.setFont(new Font("Helvetica", Font.BOLD, 30));
-      g.drawString("Bullets: " + Integer.toString(basicGun.numBullets - basicGun.curBullet),
-	  3*FRAME_WIDTH/4, 100);
-      g.drawString("Health: " + Integer.toString(player1.health), 3*FRAME_WIDTH/4, 150); 
-
-    }
-  }
-
+      g.drawString("Bullets: " + Integer.toString(basicGun.numBullets - basicGun.curBullet), 3*FRAME_WIDTH/4, 100);
+      g.drawString("Health: " + Integer.toString(player1.health), FRAME_WIDTH/4, 100);
+      if (reloading) {
+        g.drawString("Reloading...", 3*FRAME_WIDTH/4, 150);
+      }
+    }  //PaintComponent method end
+  }  //GraphicsPanel class end
 
   // Key Listener
   static class MyKeyListener implements KeyListener {
@@ -327,20 +405,20 @@ public class Main {
       int key = e.getKeyCode();
 
       // Horizontal Movement
-      if (key == KeyEvent.VK_LEFT) {
+      if (key == KeyEvent.VK_A) {
 	player1.vX = -player1.speed;
 	player1.facingRight = false;
 	player1.isWalking = true;
       }
 
-      else if (key == KeyEvent.VK_RIGHT) {
+      else if (key == KeyEvent.VK_D) {
 	player1.vX = player1.speed;
 	player1.facingRight = true;
 	player1.isWalking = true;
       }
 
       // Jump
-      if (key == KeyEvent.VK_UP && jumpCount < 2) {
+      if (key == KeyEvent.VK_W && jumpCount < 2) {
 	player1.vY = (double)player1.jumpSpeed;
 	player1.isJumping = true;
 
@@ -351,27 +429,48 @@ public class Main {
       }
 
       // Fire
-      if (key == KeyEvent.VK_SPACE) {
-	basicGun.shoot(player1);
+      if (key == KeyEvent.VK_SPACE) {   
+        shotGap[0] += 20;
+        curGun.isShooting = true;
       }
-
     }
-
+    
+    // Reload
+    if (key == KeyEvent.VK_K && curGun.numBullets - curGun.curBullet != curGun.numBullets && !reloading) {
+      reloadDelay = new Timer(curGun.reloadDelay, new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          reloading = curGun.reload(player1);
+            reloadDelay.stop();
+          }
+        });
+        reloadDelay.start();
+        reloading = true;
+      }
+        
+      //Switch to basic gun
+      if (key == KeyEvent.VK_1 && curGun != basicGun) {
+        curGun = basicGun;
+      }
+      //Switch to energy gun
+      else if (key == KeyEvent.VK_2 && curGun != energyGun) {
+        curGun = energyGun;
+      }
+      //Switch to machine gun
+      else if (key == KeyEvent.VK_3 && curGun != machineGun) {
+        curGun = machineGun;
+      }
+    }
+  
     public void keyReleased(KeyEvent e) {
       int key = e.getKeyCode();
 
-      if ((key == KeyEvent.VK_LEFT && !player1.facingRight) 
-	  || (key == KeyEvent.VK_RIGHT && player1.facingRight)) {
+      if ((key == KeyEvent.VK_A && !player1.facingRight) || (key == KeyEvent.VK_D && player1.facingRight)) {
 	player1.vX = 0;
 	player1.isWalking = false;
 	player1.walkFrame = 0;
       }
-
     }
 
     public void keyTyped(KeyEvent e) {}
-
-  }
-
-
-}
+  }  //KeyListener class end
+}  //Main class end
