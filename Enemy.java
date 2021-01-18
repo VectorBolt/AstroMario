@@ -24,7 +24,7 @@ public abstract class Enemy {
   Rectangle hitbox;
   BufferedImage[] images = new BufferedImage[2];
   double walkFrame;
-
+  
   /*
    * collision
    * This method checks if the player collided with the enemy.
@@ -38,6 +38,6 @@ public abstract class Enemy {
       player.isInvulnerable = true;
     }
   }
-
+  
 }
 

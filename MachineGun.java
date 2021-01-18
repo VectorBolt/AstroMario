@@ -22,7 +22,6 @@ public class MachineGun extends Gun {
       this.bulletLocs[i][0] = player.x + player.w;
       this.bulletLocs[i][1] = player.y/2;
       this.bulletVisible[i] = false;
-      this.bulletVelocities[i] = 20;
     }
   }
 }
