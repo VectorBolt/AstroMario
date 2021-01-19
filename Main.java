@@ -49,8 +49,9 @@ public class Main {
   
   // Platform properties
   static int[][] platforms = {
-    {FRAME_WIDTH/2, FRAME_HEIGHT - GROUND_HEIGHT - 200, 300, 30},
-    {3*FRAME_WIDTH/4, FRAME_HEIGHT - GROUND_HEIGHT - 400, 300, 30}
+    {FRAME_WIDTH/3, FRAME_HEIGHT - GROUND_HEIGHT - 100, 300, 100},
+    {3*FRAME_WIDTH/4, FRAME_HEIGHT - GROUND_HEIGHT - 250, 400, 100},
+    {FRAME_WIDTH, FRAME_HEIGHT - GROUND_HEIGHT - 150, 200, 10}
   };
   
   static Rectangle[] water = {
@@ -60,6 +61,7 @@ public class Main {
   
   // Player
   static Player player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -30);
+  static int collisionShift = 0;
   
   // Guns
   static Gun basicGun = new BasicGun(player1);
@@ -92,7 +94,6 @@ public class Main {
     
   }
   
-  
   // GAME LOOP
   public static void runGameLoop() {
     while (true) {
@@ -101,36 +102,41 @@ public class Main {
         Thread.sleep(20);
       } catch (Exception e) {}
       
-      // Move Background Image when moving left-to-right
-      background1X -= player1.vX;
-      if (background1X + background1W <= 0) {
-        background1X = background2X - player1.vX + background2W;
-      }
-      else if (background1X >= FRAME_WIDTH) {
-        background1X = background2X - background2W - player1.vX;
-      }
-      
-      background2X -= player1.vX;
-      if (background2X + background2W <= 0) {
-        background2X = background1X + background1W;
-      }
-      else if (background2X >= FRAME_WIDTH) {
-        background2X = background1X - background1W;
-      }
-      
-      // Move Platforms
-      for (int i = 0; i < platforms.length; i++) {
-        platforms[i][0] -= player1.vX;
-      }
-      for (int i = 0; i < water.length; i++) {
-        water[i].setLocation((int)water[i].getX() - player1.vX, (int)water[i].getY());
-      }
-      
-      // Move Enemies
-      for (int i = 0; i < goombas.length; i++) {
-        goombas[i].init_x -= player1.vX;
-        goombas[i].x -= player1.vX;
+      // Scroll Background Image when moving left-to-right
+      if (!player1.isBlockedRight && !player1.isBlockedLeft) {
+        background1X -= player1.vX - collisionShift;
+        if (background1X + background1W <= 0) {
+          background1X = background2X - player1.vX + background2W;
+        }
+        else if (background1X >= FRAME_WIDTH) {
+          background1X = background2X - background2W - player1.vX;
+        }
         
+        background2X -= player1.vX - collisionShift;
+        if (background2X + background2W <= 0) {
+          background2X = background1X + background1W;
+        }
+        else if (background2X >= FRAME_WIDTH) {
+          background2X = background1X - background1W;
+        }
+        
+        // Scroll platforms
+        for (int i = 0; i < platforms.length; i++) {
+          platforms[i][0] -= player1.vX - collisionShift;
+        }
+        for (int i = 0; i < water.length; i++) {
+          water[i].setLocation((int)water[i].getX() - player1.vX + collisionShift, (int)water[i].getY());
+        }
+        
+        // Scroll enemies with background
+        for (int i = 0; i < goombas.length; i++) {
+          goombas[i].init_x -= player1.vX - collisionShift;
+          goombas[i].x -= player1.vX - collisionShift;
+        }
+      }
+      
+      // Move enemies
+      for (int i = 0; i < goombas.length; i++) {  
         goombas[i].x += goombas[i].speed;
         if (Math.abs(goombas[i].x - goombas[i].init_x) >= goombas[i].walkRange) {
           goombas[i].speed *= -1;
@@ -233,6 +239,8 @@ public class Main {
         player1.vY = 0;
         jumpCount = 0;
         player1.isJumping = false;
+        player1.isBlockedRight = false;
+        player1.isBlockedLeft = false;
       }
       
       platformCollision();
@@ -294,24 +302,38 @@ public class Main {
   public static void platformCollision() {
     
     // Iterate over each platform
+    
     for (int i = 0; i < platforms.length; i++) {
-      
       // If the player is on top of the platform
-      if (player1.y + player1.h >= platforms[i][1] && player1.y + player1.h < platforms[i][1] + platforms[i][3] 
-            && player1.x + player1.w >= platforms[i][0] && player1.x <= platforms[i][0] + platforms[i][2]) {
-        
-        player1.y = platforms[i][1] - player1.h;
+      if (player1.y >= platforms[i][1] - player1.h && player1.y <= platforms[i][1]
+            && player1.x + player1.w > platforms[i][0] && player1.x < platforms[i][0] + platforms[i][2]) {
+        player1.y = platforms[i][1] - player1.h - 1;
         player1.vY = 0;
         jumpCount = 0;
         player1.isJumping = false;
+        player1.isBlockedRight = false;
+        player1.isBlockedLeft = false;
       }
       
-      // If the player bumps their head on the platform from below
-      else if (player1.y < platforms[i][1] + platforms[i][3] && player1.y > platforms[i][1]
+      // If player hits playform from the side or from below
+      else if (player1.y + player1.h > platforms[i][1]  - 1 && player1.y < platforms[i][1] + platforms[i][3] + 1
                  && player1.x + player1.w >= platforms[i][0] && player1.x <= platforms[i][0] + platforms[i][2]) {
-        
-        player1.y = platforms[i][1] + platforms[i][3];
-        player1.vY = 0;
+        // If player collides with platform on right
+        if (player1.x <= platforms[i][0]) {
+          player1.vX = 0;
+          player1.isBlockedRight = true;
+        }
+        // If player collides with platform on left
+        else if (player1.x + player1.w >= platforms[i][0] + platforms[i][2]) {
+          player1.vX = 0;
+          player1.isBlockedLeft = true;
+        }
+        // If the player bumps their head on the platform from below
+        else {
+          player1.y = platforms[i][1] + platforms[i][3] + 1;
+          player1.isBlockedRight = false;
+          player1.isBlockedLeft = false;
+        }
       }
     }
   }  // platformCollision method end
@@ -408,21 +430,36 @@ public class Main {
       
       // Horizontal Movement
       if (key == KeyEvent.VK_A) {
-        player1.vX = -player1.speed;
         player1.facingRight = false;
         player1.isWalking = true;
+        player1.vX = -player1.speed;
+        player1.isBlockedRight = false;
+        if (player1.isBlockedLeft) {
+          collisionShift = player1.vX;
+        }
+        else {
+          collisionShift = 0;
+        }
       }
-      
       else if (key == KeyEvent.VK_D) {
-        player1.vX = player1.speed;
         player1.facingRight = true;
         player1.isWalking = true;
+        player1.vX = player1.speed;
+        player1.isBlockedLeft = false;
+        if (player1.isBlockedRight) {   
+          collisionShift = player1.vX;
+        }
+        else {
+          collisionShift = 0;
+        }
       }
       
       // Jump
       if (key == KeyEvent.VK_W && jumpCount < 2) {
         player1.vY = (double)player1.jumpSpeed;
         player1.isJumping = true;
+        player1.isBlockedLeft = false;
+        player1.isBlockedRight = false;
         
         // Only increment jump counter if the player is not in water
         if (!player1.isSwimming) {
@@ -464,11 +501,12 @@ public class Main {
     
     public void keyReleased(KeyEvent e) {
       int key = e.getKeyCode();
-      // Stop moving when key
+      // Stop moving when key released
       if ((key == KeyEvent.VK_A && !player1.facingRight) || (key == KeyEvent.VK_D && player1.facingRight)) {
         player1.vX = 0;
         player1.isWalking = false;
         player1.walkFrame = 0;
+        collisionShift = 0;
       }
       // Reset shot delay for basic gun
       else if (key == KeyEvent.VK_SPACE) {
