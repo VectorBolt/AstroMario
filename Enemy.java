@@ -26,7 +26,7 @@ public abstract class Enemy {
   BufferedImage[] images = new BufferedImage[2];
   double walkFrame;
   
-  /*
+  /**
    * collision
    * This method checks if the player collided with the enemy.
    * If the player touched the enemey, the players health will be reduced
@@ -40,4 +40,38 @@ public abstract class Enemy {
     }
   }
   
+
+  /**
+   * move
+   * This method updates the enemies coordinates as the player moves
+   * @param player the instance of the player
+   */
+  public void move(Player player) {
+    // Move Enemies
+    this.init_x -= player.vX;
+    this.x -= player.vX;
+
+    if (this.movesHorizontally) {
+      this.x += this.speed;
+      if (Math.abs(this.x - this.init_x) >= this.walkRange) {
+        this.speed *= -1;
+      }
+    }
+    else {
+      this.y += this.speed;
+      if (Math.abs(this.y - this.init_y) >= this.walkRange) {
+        this.speed *= -1;
+      }
+    }
+
+    this.hitbox.setLocation(this.x, this.y);
+    this.collision(player);
+
+    // Walk Frames for images
+    this.walkFrame += 0.1;
+    if (this.walkFrame >= 2) {
+      this.walkFrame = 0;
+    }
+  }
+
 }

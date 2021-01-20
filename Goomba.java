@@ -33,7 +33,7 @@ public class Goomba extends Enemy {
     this.targetsX = false;
     this.targetsY = false;
     
-    this.health = 1;
+    this.health = 20;
     this.damage = 1;
     this.hitbox = new Rectangle(this.x, this.y, this.w, this.h);
     try {
