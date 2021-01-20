@@ -19,8 +19,8 @@ public class Main {
   // Window Properties
   static JFrame window;
   static GraphicsPanel canvas;
-  static final int FRAME_WIDTH = 1534;
-  static final int FRAME_HEIGHT = 816;
+  static final int FRAME_WIDTH = 1280;
+  static final int FRAME_HEIGHT = 720;
   
   // Listeners
   static MyKeyListener keyListener = new MyKeyListener();
@@ -29,12 +29,12 @@ public class Main {
   static BufferedImage background1;
   static int background1X = 0;
   static int background1Y = 0;
-  static int background1W = 1534;
+  static int background1W = 1280;
   
   static BufferedImage background2;
   static int background2X = background1W;
   static int background2Y = 0;
-  static int background2W = 1534;
+  static int background2W = 1280;
   
   // Gravity Properties
   static final int GROUND_HEIGHT = 100;
@@ -46,17 +46,36 @@ public class Main {
     new Goomba(3*FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-32, 100),
     new Goomba(FRAME_WIDTH/2 + 150, FRAME_HEIGHT - GROUND_HEIGHT - 232, 100)
   };
+
+  static Crab[] crabs = {
+    new Crab(500, FRAME_HEIGHT-GROUND_HEIGHT-32, 100),
+    new Crab(800, FRAME_HEIGHT-GROUND_HEIGHT-32, 100)
+  };
   
+  static Bee[] bees = {
+    new Bee(900, 400, 100),
+    new Bee(1200, 500, 250)
+  };
+
+  static Flyer[] flyers = {
+    new Flyer(1000, 200, 100),
+    new Flyer(1600, 300, 250)
+  };
+
+  static Enemy[][] enemies = {goombas, crabs, bees, flyers};
+
   // Platform properties
   static int[][] platforms = {
-    {FRAME_WIDTH/2, FRAME_HEIGHT - GROUND_HEIGHT - 200, 300, 30},
-    {3*FRAME_WIDTH/4, FRAME_HEIGHT - GROUND_HEIGHT - 400, 300, 30}
+    {FRAME_WIDTH/2, FRAME_HEIGHT - GROUND_HEIGHT - 200, 250, 65},
+    {3*FRAME_WIDTH/4, FRAME_HEIGHT - GROUND_HEIGHT - 400, 250, 65}
   };
+  static BufferedImage platformImage;
   
   static Rectangle[] water = {
-    new Rectangle(200, 100, 700, 600),
-    new Rectangle(1700, 100, 800, 800)
+    new Rectangle(200, 100, 320, 192),
+    new Rectangle(1700, 100, 320, 192)
   };
+  static BufferedImage waterImage;
   
   // Player
   static Player player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -30);
@@ -84,8 +103,10 @@ public class Main {
     window.add(canvas);
     
     // Images
-    background1 = ImageIO.read(new File("space copy.png"));
-    background2 = ImageIO.read(new File("space copy flipped.png"));
+    background1 = ImageIO.read(new File("images/space copy.png"));
+    background2 = ImageIO.read(new File("images/space copy flipped.png"));
+    platformImage = ImageIO.read(new File("images/platform.png"));
+    waterImage = ImageIO.read(new File("images/water.png"));
     
     window.setVisible(true);
     runGameLoop();
@@ -101,23 +122,9 @@ public class Main {
         Thread.sleep(20);
       } catch (Exception e) {}
       
-      // Move Background Image when moving left-to-right
-      background1X -= player1.vX;
-      if (background1X + background1W <= 0) {
-        background1X = background2X - player1.vX + background2W;
-      }
-      else if (background1X >= FRAME_WIDTH) {
-        background1X = background2X - background2W - player1.vX;
-      }
-      
-      background2X -= player1.vX;
-      if (background2X + background2W <= 0) {
-        background2X = background1X + background1W;
-      }
-      else if (background2X >= FRAME_WIDTH) {
-        background2X = background1X - background1W;
-      }
-      
+      waterPhysics(); // Check if the player is in water, and change physics accordingly
+      moveBackground(); // Call method to move background as player moves
+
       // Move Platforms
       for (int i = 0; i < platforms.length; i++) {
         platforms[i][0] -= player1.vX;
@@ -127,24 +134,12 @@ public class Main {
       }
       
       // Move Enemies
-      for (int i = 0; i < goombas.length; i++) {
-        goombas[i].init_x -= player1.vX;
-        goombas[i].x -= player1.vX;
-        
-        goombas[i].x += goombas[i].speed;
-        if (Math.abs(goombas[i].x - goombas[i].init_x) >= goombas[i].walkRange) {
-          goombas[i].speed *= -1;
-        }
-        goombas[i].hitbox.setLocation(goombas[i].x, goombas[i].y);
-        goombas[i].collision(player1);
-        
-        // Walk Frames for images
-        goombas[i].walkFrame += 0.1;
-        if (goombas[i].walkFrame >= 2) {
-          goombas[i].walkFrame = 0;
+      for (int enemyType = 0; enemyType < enemies.length; enemyType++) {
+        for (int curEnemy = 0; curEnemy < enemies[enemyType].length; curEnemy++) {
+          enemies[enemyType][curEnemy].move(player1);
         }
       }
-      
+
       /* Gun bullets */
       // Basic gun bullets
       moveBullets(basicGun);
@@ -161,13 +156,16 @@ public class Main {
           chargeLength[i] = 0;  
         }
         else if (energyGun.bulletVisible[i]) {
-          energyGun.bulletBoxes[i] = new Rectangle(energyGun.bulletLocs[i][0], energyGun.bulletLocs[i][1], energyGun.bulletW, energyGun.bulletH);  // Update hitbox
+          energyGun.bulletBoxes[i] = new Rectangle(
+              energyGun.bulletLocs[i][0], energyGun.bulletLocs[i][1], energyGun.bulletW, energyGun.bulletH
+              );  // Update hitbox
           beamFade[i] += 20;
           // If an enemy is hit
-          for (int j = 0; j < goombas.length; j++) {
-            if (energyGun.bulletBoxes[i] != null && goombas[j].health > 0 && energyGun.bulletBoxes[i].intersects(goombas[j].hitbox)) {
-              if (energyGun.bulletVisible[i]) {
-                goombas[j].health -= energyGun.bulletDamage;
+          for (int enemyType = 0; enemyType < enemies.length; enemyType++) {
+            for (int curEnemy = 0; curEnemy < enemies[enemyType].length; curEnemy++) { 
+              if (energyGun.bulletBoxes[i] != null && enemies[enemyType][curEnemy].health > 0 
+                  && energyGun.bulletBoxes[i].intersects(enemies[enemyType][curEnemy].hitbox)) {
+                enemies[enemyType][curEnemy].health -= energyGun.bulletDamage;
               }
             }
           }
@@ -199,28 +197,6 @@ public class Main {
         machineGun.shoot(player1); 
       }
       
-      // When in water
-      player1.isSwimming = false; // reset to false before checking
-      player1.jumpSpeed = -30;
-      player1.speed = 10;
-      gravity = 2.0;
-      for (int i = 0; i < water.length; i++) {
-        if (player1.hitbox.intersects(water[i])) {
-          
-          if (player1.vY > 9) {
-            player1.vY = 9;
-          }
-          else if (player1.vY < -9) {
-            player1.vY = -9;
-          }
-          
-          player1.isSwimming = true;
-          player1.speed = 7;
-          player1.jumpSpeed = -7;
-          gravity = 0.3;
-          jumpCount = 0;
-        }
-      }
       
       // Move Player when Jumping
       player1.vY += gravity;
@@ -256,6 +232,33 @@ public class Main {
       
     }
   }  //runGameLoop method end
+
+
+  /**
+   * moveBackground
+   * This method moves the background in the opposite direction of the player
+   */
+  public static void moveBackground() {
+
+    // Move Background Image when moving left-to-right
+    background1X -= player1.vX;
+    if (background1X + background1W <= 0) {
+      background1X = background2X - player1.vX + background2W;
+    }
+    else if (background1X >= FRAME_WIDTH) {
+      background1X = background2X - background2W - player1.vX;
+    }
+
+    background2X -= player1.vX;
+    if (background2X + background2W <= 0) {
+      background2X = background1X + background1W;
+    }
+    else if (background2X >= FRAME_WIDTH) {
+      background2X = background1X - background1W;
+    }
+
+  } // moveBackground method end
+
   
   /**
    * moveBullets
@@ -275,18 +278,23 @@ public class Main {
       }
       
       // If an enemy is hit
-      for (int j = 0; j < goombas.length; j++) {
-        if (guntype.bulletBoxes[i] != null && goombas[j].health > 0 && guntype.bulletBoxes[i].intersects(goombas[j].hitbox)) {
-          if (guntype.bulletVisible[i]) {
-            goombas[j].health -= guntype.bulletDamage;
+      for (int enemyType = 0; enemyType < enemies.length; enemyType++) {
+        for (int curEnemy = 0; curEnemy < enemies[enemyType].length; curEnemy++) {
+          if (guntype.bulletBoxes[i] != null && enemies[enemyType][curEnemy].health > 0 
+              && guntype.bulletBoxes[i].intersects(enemies[enemyType][curEnemy].hitbox)) {
+            if (guntype.bulletVisible[i]) {
+              enemies[enemyType][curEnemy].health -= guntype.bulletDamage;
+            }
+            guntype.bulletVisible[i] = false;
           }
-          guntype.bulletVisible[i] = false;
         }
       }
+
     }
   }  // moveBullets method end
   
-  /*
+
+  /**
    * platformCollision
    * This method iterates over each platform and checks if the player is touching it.
    * Based on which edge the player is touching, the player's velocity is adjusted.
@@ -315,8 +323,47 @@ public class Main {
       }
     }
   }  // platformCollision method end
+
+
+  /**
+   * waterPhysics
+   * This method moves the player differently if they are in water.
+   * The method automatically implements water physics only if the player is in water.
+   */
+  public static void waterPhysics() {
+
+    // Reset player properties and gravity to normal before checking if the player is in water.
+    player1.isSwimming = false; 
+    player1.jumpSpeed = -30;
+    player1.speed = 10;
+    gravity = 2.0;
+
+    // Iterate over each block of water
+    for (int i = 0; i < water.length; i++) {
+      if (player1.hitbox.intersects(water[i])) {
+
+        // Set a velocity cap so the player doesn't fall too fast through water
+        if (player1.vY > 9) {
+          player1.vY = 9;
+        }
+        else if (player1.vY < -9) {
+          player1.vY = -9;
+        }
+
+        // Modify player properties
+        player1.isSwimming = true;
+        player1.speed = 7;
+        player1.jumpSpeed = -7;
+
+        gravity = 0.3; // Slower gravity when the player is in water
+        jumpCount = 0; // Give player infinite jumps when in water
+      }
+    }
+
+  } // waterPhysics method end
   
-  // Graphics Panel
+
+  /* GRAPHICS PANEL */
   static class GraphicsPanel extends JPanel {
     public GraphicsPanel() {
       setFocusable(true);
@@ -336,26 +383,30 @@ public class Main {
       // Draw Water
       g.setColor(Color.BLUE);
       for (int i = 0; i < water.length; i++) {
-        g.fillRect((int)water[i].getX(), (int)water[i].getY(), 
-                   (int)water[i].getWidth(), (int)water[i].getHeight());
+        g.drawImage(waterImage, (int)water[i].getX(), (int)water[i].getY(), this);
       }
       
       // Draw Player
       g.drawImage(player1.currentImage, player1.x, player1.y, this);
       
-      // Draw goombas
-      for (int i = 0; i < goombas.length; i++) {
-        if (goombas[i].health > 0) {
-          g.drawImage(goombas[i].images[(int)goombas[i].walkFrame], goombas[i].x, goombas[i].y, this);
+      // Move Enemies
+      for (int enemyType = 0; enemyType < enemies.length; enemyType++) {
+        for (int curEnemy = 0; curEnemy < enemies[enemyType].length; curEnemy++) {
+          if (enemies[enemyType][curEnemy].health > 0) {
+            g.drawImage(
+                enemies[enemyType][curEnemy].images[(int)enemies[enemyType][curEnemy].walkFrame],
+                enemies[enemyType][curEnemy].x, enemies[enemyType][curEnemy].y, this
+                );
+          }
         }
       }
-      
+
       // Draw Ground
       g.setColor(Color.GREEN);
       g.fillRect(0, FRAME_HEIGHT-100, FRAME_WIDTH, 100);
       
       for (int i = 0; i < platforms.length; i++) {
-        g.fillRect(platforms[i][0], platforms[i][1], platforms[i][2], platforms[i][3]);
+        g.drawImage(platformImage, platforms[i][0], platforms[i][1], this);
       }
       
       /* Draw Bullets */
@@ -393,14 +444,14 @@ public class Main {
       g.setColor(Color.WHITE);
       g.setFont(new Font("Helvetica", Font.BOLD, 30));
       g.drawString("Bullets: " + Integer.toString(curGun.numBullets - curGun.curBullet), 3*FRAME_WIDTH/4, 100);
-      g.drawString("Health: " + Integer.toString(player1.health), FRAME_WIDTH/4, 100);
+      g.drawString("Health: " + Integer.toString(player1.health), FRAME_WIDTH/8, 100);
       if (reloading) {
         g.drawString("Reloading...", 3*FRAME_WIDTH/4, 150);
       }
     }  //PaintComponent method end
   }  //GraphicsPanel class end
   
-  // Key Listener
+  /* KEY LISTENER */ 
   static class MyKeyListener implements KeyListener {
     
     public void keyPressed(KeyEvent e) {
@@ -481,4 +532,6 @@ public class Main {
     
     public void keyTyped(KeyEvent e) {}
   }  //KeyListener class end
+
+
 }  //Main class end
