@@ -28,7 +28,7 @@ public class Player {
   BufferedImage currentImage;
   
   // Player States
-  boolean facingRight, isWalking, isJumping, isSwimming, isInvulnerable;
+  boolean facingRight, isWalking, isJumping, isSwimming, isInvulnerable, isBlockedRight, isBlockedLeft;
   double walkFrame;
   int invulnerabilityCounter;
   
@@ -66,6 +66,8 @@ public class Player {
     this.facingRight = true;
     this.isWalking = false;
     this.isJumping = false;
+    this.isBlockedRight = false;
+    this.isBlockedLeft = false;
     this.isSwimming = false;
     this.isInvulnerable = false;
     this.walkFrame = 0.0; // To iterate over each frame when walking
