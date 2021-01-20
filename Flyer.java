@@ -1,4 +1,3 @@
-
 /* Imports */
 import java.awt.*;
 // Image imports
@@ -20,7 +19,6 @@ public class Flyer extends Goomba {
         this.images[i] = ImageIO.read(new File("images/flyer" + i + ".png"));
       };
     } catch (Exception e) {}
-
   }
 
   /**
@@ -29,10 +27,10 @@ public class Flyer extends Goomba {
    * @param player the instance of the player
    */
   @Override
-  public void move(Player player) {
+  public void move(Player player, int screenShift) {
     // Move Enemies
-    this.init_x -= player.vX;
-    this.x -= player.vX;
+    this.init_x -= player.vX - screenShift;
+    this.x -= player.vX - screenShift;
 
     if (this.movesHorizontally) {
       this.x += this.speed;
@@ -50,10 +48,7 @@ public class Flyer extends Goomba {
         if (this.walkFrame == 1) {this.walkFrame = 0;}
       }
     }
-
     this.hitbox.setLocation(this.x, this.y);
     this.collision(player);
-
   }
-
 }

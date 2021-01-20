@@ -36,6 +36,9 @@ public class Player {
   int health;
   Rectangle hitbox;
   
+  // Deaths
+  int deaths;
+  
   /*
    * CONSTRUCTOR
    * This method is the constructor for the Player object.
@@ -76,6 +79,9 @@ public class Player {
     // health
     this.hitbox = new Rectangle(this.x, this.y, this.w, this.h);
     this.health = 3;
+    
+    // Deaths
+    this.deaths = 0;
     
   }
   

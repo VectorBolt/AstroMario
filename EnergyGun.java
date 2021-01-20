@@ -9,6 +9,11 @@
 /* Imports */
 import javax.swing.*;
 import java.awt.*;
+// Image imports
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 public class EnergyGun extends Gun {
   public EnergyGun(Player player) {
@@ -22,10 +27,10 @@ public class EnergyGun extends Gun {
     this.curBullet = 0;
     // Location
     this.bulletLocs = new int[numBullets][numBullets]; // {{x1, y1}, {x2, y2}, etc}
-    this.bulletW = 867;
-    this.bulletH = 40;
+    this.bulletW = 930;
+    this.bulletH = 29;
     // Shooting and reloading
-    this.shotDelay = 3000;
+    this.shotDelay = 2000;
     this.reloadDelay = 3000;
     this.beamDuration = 1000;
     this.chargingTime = 2000;

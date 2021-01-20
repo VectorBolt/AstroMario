@@ -74,5 +74,4 @@ public abstract class Enemy {
       this.walkFrame = 0;
     }
   }
-
 }
