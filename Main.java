@@ -49,9 +49,11 @@ public class Main {
   
   // Platform properties
   static int[][] platforms = {
+    // Wall
+    {-500,0,550,FRAME_HEIGHT},
     {FRAME_WIDTH/3, FRAME_HEIGHT - GROUND_HEIGHT - 100, 300, 100},
     {3*FRAME_WIDTH/4, FRAME_HEIGHT - GROUND_HEIGHT - 250, 400, 100},
-    {FRAME_WIDTH, FRAME_HEIGHT - GROUND_HEIGHT - 150, 200, 10}
+    {FRAME_WIDTH, FRAME_HEIGHT - GROUND_HEIGHT - 160, 200, 10}
   };
   
   static Rectangle[] water = {
@@ -262,6 +264,15 @@ public class Main {
         player1.invulnerabilityCounter = 0;
       }
       
+      // Make sure player is walking right direction
+      if (player1.facingRight && collisionShift > 0) {
+        collisionShift = 0;
+        player1.vX = 0;
+      }
+      else if (!player1.facingRight && collisionShift < 0) {
+        collisionShift = 0;
+        player1.vX = 0;
+      }
     }
   }  //runGameLoop method end
   
@@ -316,7 +327,7 @@ public class Main {
       }
       
       // If player hits playform from the side or from below
-      else if (player1.y + player1.h > platforms[i][1]  - 1 && player1.y < platforms[i][1] + platforms[i][3] + 1
+      else if (player1.y + player1.h > platforms[i][1] && player1.y < platforms[i][1] + platforms[i][3] + 1
                  && player1.x + player1.w >= platforms[i][0] && player1.x <= platforms[i][0] + platforms[i][2]) {
         // If player collides with platform on right
         if (player1.x <= platforms[i][0]) {
