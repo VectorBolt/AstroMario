@@ -45,11 +45,12 @@ public abstract class Enemy {
    * move
    * This method updates the enemies coordinates as the player moves
    * @param player the instance of the player
+   * @param screenShift
    */
-  public void move(Player player) {
+  public void move(Player player, int screenShift) {
     // Move Enemies
-    this.init_x -= player.vX;
-    this.x -= player.vX;
+    this.init_x -= player.vX - screenShift;
+    this.x -= player.vX - screenShift;
 
     if (this.movesHorizontally) {
       this.x += this.speed;

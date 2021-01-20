@@ -66,8 +66,11 @@ public class Main {
 
   // Platform properties
   static int[][] platforms = {
-    {FRAME_WIDTH/2, FRAME_HEIGHT - GROUND_HEIGHT - 200, 250, 65},
-    {3*FRAME_WIDTH/4, FRAME_HEIGHT - GROUND_HEIGHT - 400, 250, 65}
+    // Wall
+    {-500,0,550,FRAME_HEIGHT},
+    {FRAME_WIDTH/3, FRAME_HEIGHT - GROUND_HEIGHT - 100, 250, 65},
+    {3*FRAME_WIDTH/4, FRAME_HEIGHT - GROUND_HEIGHT - 250, 250, 65},
+    {FRAME_WIDTH, FRAME_HEIGHT - GROUND_HEIGHT - 160, 250, 65}
   };
   static BufferedImage platformImage;
   
@@ -79,6 +82,7 @@ public class Main {
   
   // Player
   static Player player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -30);
+  static int collisionShift = 0;
   
   // Guns
   static Gun basicGun = new BasicGun(player1);
@@ -125,18 +129,18 @@ public class Main {
       waterPhysics(); // Check if the player is in water, and change physics accordingly
       moveBackground(); // Call method to move background as player moves
 
-      // Move Platforms
+      // Scroll platforms
       for (int i = 0; i < platforms.length; i++) {
-        platforms[i][0] -= player1.vX;
+        platforms[i][0] -= player1.vX - collisionShift;
       }
       for (int i = 0; i < water.length; i++) {
-        water[i].setLocation((int)water[i].getX() - player1.vX, (int)water[i].getY());
+        water[i].setLocation((int)water[i].getX() - player1.vX + collisionShift, (int)water[i].getY());
       }
       
       // Move Enemies
       for (int enemyType = 0; enemyType < enemies.length; enemyType++) {
         for (int curEnemy = 0; curEnemy < enemies[enemyType].length; curEnemy++) {
-          enemies[enemyType][curEnemy].move(player1);
+          enemies[enemyType][curEnemy].move(player1, collisionShift);
         }
       }
 
@@ -209,6 +213,8 @@ public class Main {
         player1.vY = 0;
         jumpCount = 0;
         player1.isJumping = false;
+        player1.isBlockedRight = false;
+        player1.isBlockedLeft = false;
       }
       
       platformCollision();
@@ -230,6 +236,16 @@ public class Main {
         player1.invulnerabilityCounter = 0;
       }
       
+      // Make sure player is walking right direction
+      if (player1.facingRight && collisionShift > 0) {
+        collisionShift = 0;
+        player1.vX = 0;
+      }
+      else if (!player1.facingRight && collisionShift < 0) {
+        collisionShift = 0;
+        player1.vX = 0;
+      }
+      
     }
   }  //runGameLoop method end
 
@@ -239,24 +255,25 @@ public class Main {
    * This method moves the background in the opposite direction of the player
    */
   public static void moveBackground() {
-
-    // Move Background Image when moving left-to-right
-    background1X -= player1.vX;
-    if (background1X + background1W <= 0) {
-      background1X = background2X - player1.vX + background2W;
+    
+    if (!player1.isBlockedRight && !player1.isBlockedLeft) {
+      background1X -= player1.vX - collisionShift;
+      if (background1X + background1W <= 0) {
+        background1X = background2X - player1.vX + background2W;
+      }
+      else if (background1X >= FRAME_WIDTH) {
+        background1X = background2X - background2W - player1.vX;
+      }
+      
+      background2X -= player1.vX - collisionShift;
+      if (background2X + background2W <= 0) {
+        background2X = background1X + background1W;
+      }
+      else if (background2X >= FRAME_WIDTH) {
+        background2X = background1X - background1W;
+      }
     }
-    else if (background1X >= FRAME_WIDTH) {
-      background1X = background2X - background2W - player1.vX;
-    }
-
-    background2X -= player1.vX;
-    if (background2X + background2W <= 0) {
-      background2X = background1X + background1W;
-    }
-    else if (background2X >= FRAME_WIDTH) {
-      background2X = background1X - background1W;
-    }
-
+    
   } // moveBackground method end
 
   
@@ -293,7 +310,7 @@ public class Main {
     }
   }  // moveBullets method end
   
-
+  
   /**
    * platformCollision
    * This method iterates over each platform and checks if the player is touching it.
@@ -302,24 +319,38 @@ public class Main {
   public static void platformCollision() {
     
     // Iterate over each platform
+    
     for (int i = 0; i < platforms.length; i++) {
-      
       // If the player is on top of the platform
-      if (player1.y + player1.h >= platforms[i][1] && player1.y + player1.h < platforms[i][1] + platforms[i][3] 
-            && player1.x + player1.w >= platforms[i][0] && player1.x <= platforms[i][0] + platforms[i][2]) {
-        
-        player1.y = platforms[i][1] - player1.h;
+      if (player1.y >= platforms[i][1] - player1.h && player1.y <= platforms[i][1]
+            && player1.x + player1.w > platforms[i][0] && player1.x < platforms[i][0] + platforms[i][2]) {
+        player1.y = platforms[i][1] - player1.h - 1;
         player1.vY = 0;
         jumpCount = 0;
         player1.isJumping = false;
+        player1.isBlockedRight = false;
+        player1.isBlockedLeft = false;
       }
       
-      // If the player bumps their head on the platform from below
-      else if (player1.y < platforms[i][1] + platforms[i][3] && player1.y > platforms[i][1]
+      // If player hits playform from the side or from below
+      else if (player1.y + player1.h > platforms[i][1] && player1.y < platforms[i][1] + platforms[i][3] + 1
                  && player1.x + player1.w >= platforms[i][0] && player1.x <= platforms[i][0] + platforms[i][2]) {
-        
-        player1.y = platforms[i][1] + platforms[i][3];
-        player1.vY = 0;
+        // If player collides with platform on right
+        if (player1.x <= platforms[i][0]) {
+          player1.vX = 0;
+          player1.isBlockedRight = true;
+        }
+        // If player collides with platform on left
+        else if (player1.x + player1.w >= platforms[i][0] + platforms[i][2]) {
+          player1.vX = 0;
+          player1.isBlockedLeft = true;
+        }
+        // If the player bumps their head on the platform from below
+        else {
+          player1.y = platforms[i][1] + platforms[i][3] + 1;
+          player1.isBlockedRight = false;
+          player1.isBlockedLeft = false;
+        }
       }
     }
   }  // platformCollision method end
@@ -462,12 +493,30 @@ public class Main {
         player1.vX = -player1.speed;
         player1.facingRight = false;
         player1.isWalking = true;
+        player1.isBlockedRight = false;
+        
+        if (player1.isBlockedLeft) {
+          collisionShift = player1.vX;
+        }
+        else {
+          collisionShift = 0;
+        }
+        
       }
       
       else if (key == KeyEvent.VK_D) {
         player1.vX = player1.speed;
         player1.facingRight = true;
         player1.isWalking = true;
+        
+        player1.isBlockedLeft = false;
+        if (player1.isBlockedRight) {   
+          collisionShift = player1.vX;
+        }
+        else {
+          collisionShift = 0;
+        }
+        
       }
       
       // Jump
@@ -479,6 +528,10 @@ public class Main {
         if (!player1.isSwimming) {
           jumpCount++;
         }
+        
+        player1.isBlockedLeft = false;
+        player1.isBlockedRight = false;
+        
       }
       
       // Fire
@@ -515,11 +568,13 @@ public class Main {
     
     public void keyReleased(KeyEvent e) {
       int key = e.getKeyCode();
-      // Stop moving when key
+      // Stop moving when key is released
       if ((key == KeyEvent.VK_A && !player1.facingRight) || (key == KeyEvent.VK_D && player1.facingRight)) {
         player1.vX = 0;
         player1.isWalking = false;
         player1.walkFrame = 0;
+        
+        collisionShift = 0;
       }
       // Reset shot delay for basic gun
       else if (key == KeyEvent.VK_SPACE) {
