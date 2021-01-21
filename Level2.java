@@ -1,13 +1,14 @@
 
+
 /* Imports */
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Level1 extends Level {
+public class Level2 extends Level {
   
   /* CONSTRUCTOR */
-  public Level1(JFrame gameWindow) {
+  public Level2(JFrame gameWindow) {
     
     this.window = gameWindow;
     this.keyListener = new MyKeyListener(this);
@@ -51,7 +52,7 @@ public class Level1 extends Level {
       {3*FRAME_WIDTH/4, FRAME_HEIGHT - GROUND_HEIGHT - 250, 245, 65},
       {FRAME_WIDTH, FRAME_HEIGHT - GROUND_HEIGHT - 160, 245, 65}
     };
-
+    
     // Wall Properties
     this.walls = new int[][] {
       // Start wall
@@ -59,15 +60,17 @@ public class Level1 extends Level {
         // End wall
       {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT}
     };
-    
+
     this.spikes = new int[][] {
-      {2*FRAME_WIDTH, FRAME_HEIGHT - 130, 125, 30},
-      {2*FRAME_WIDTH + 300, FRAME_HEIGHT - 130, 125, 30}
+      {500, FRAME_HEIGHT - 130, 125, 30},
+      {675, FRAME_HEIGHT - 130, 125, 30},
+      {850, FRAME_HEIGHT - 130, 125, 30},
+      {1025, FRAME_HEIGHT - 130, 125, 30},
     };
 
     this.water = new Rectangle[] {
-      new Rectangle(200, 100, 320, 192),
-      new Rectangle(1700, 100, 320, 192)
+      new Rectangle(1100, 100, 320, 192),
+      new Rectangle(1420, 100, 320, 192)
     };
 
 

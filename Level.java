@@ -53,6 +53,7 @@ public abstract class Level {
   // Platform properties
   int[][] platforms;
   BufferedImage platformImage;
+  int[][] walls;
   
   // Spike properties
   int[][] spikes;
@@ -159,6 +160,9 @@ public abstract class Level {
       for (int i = 0; i < this.water.length; i++) {
         this.water[i].setLocation((int)this.water[i].getX() - this.player1.vX + this.collisionShift, (int)this.water[i].getY());
       }
+      for (int i = 0; i < this.walls.length; i++) {
+        this.walls[i][0] -= this.player1.vX - this.collisionShift;
+      }
       
       for (int i = 0; i < spikes.length; i++) {
         this.spikes[i][0] -= this.player1.vX - this.collisionShift;
@@ -218,6 +222,7 @@ public abstract class Level {
       }
       
       this.platformCollision();
+      this.wallCollision();
 
       // Iterate over each frame of walking
       if (this.player1.isWalking && !this.player1.isJumping) {
@@ -253,7 +258,7 @@ public abstract class Level {
       }
       
       // Check if player has finished the level
-      if (player1.hitbox.intersects(platforms[2][0] - 5, platforms[2][1] - 5, platforms[2][2] + 10, platforms[2][3] + 5)) {
+      if (player1.hitbox.intersects(platforms[0][0] - 5, platforms[0][1] - 5, platforms[0][2] + 10, platforms[0][3] + 5)) {
         this.inPlay = false;
         this.wonLevel = true;
       }
@@ -333,11 +338,21 @@ public abstract class Level {
         }
       }
 
-      // If bullet touches a platform
+      // If bullet touches a platform or wall
       if (guntype.bulletVisible[i]) {
+        
+        // If bullet touches a platform 
         for (int k = 0; k < this.platforms.length; k++) {
           if (guntype.bulletBoxes[i].intersects(this.platforms[k][0], this.platforms[k][1], 
                                                 this.platforms[k][2], this.platforms[k][3])) {
+            guntype.bulletVisible[i] = false;
+          }
+        }
+
+        // If bullet touches a wall
+        for (int k = 0; k < this.walls.length; k++) {
+          if (guntype.bulletBoxes[i].intersects(this.walls[k][0], this.walls[k][1], 
+                                                this.walls[k][2], this.walls[k][3])) {
             guntype.bulletVisible[i] = false;
           }
         }
@@ -399,7 +414,7 @@ public abstract class Level {
     // Iterate over each platform
     
     for (int i = 0; i < this.platforms.length; i++) {
-      if (i > 2) {
+      if (i > 0) {
         // If the player is on top of the platform
         if (this.player1.y >= this.platforms[i][1] - this.player1.h && this.player1.y <= this.platforms[i][1]
               && this.player1.x + this.player1.w > this.platforms[i][0] && this.player1.x < this.platforms[i][0] + this.platforms[i][2]) {
@@ -417,22 +432,34 @@ public abstract class Level {
           this.player1.vY = 0;
         }
       }
-      // If player hits playform from the side
-      else if (this.player1.y + this.player1.h > this.platforms[i][1] && this.player1.y < this.platforms[i][1] + this.platforms[i][3] + 1
-                 && this.player1.x + this.player1.w >= this.platforms[i][0] && this.player1.x <= this.platforms[i][0] + this.platforms[i][2]) {
-        // If player collides with platform on right
-        if (this.player1.x <= this.platforms[i][0]) {
+    }
+  }  // platformCollision method end 
+
+
+  /**
+   * wallCollision
+   * This method iterates over each wall and checks if the player is touching it.
+   * Based on which edge the player is touching, the player's velocity is adjusted.
+   */
+  public void wallCollision() {
+    for (int i = 0; i < this.walls.length; i++) {
+      // If player hits wall from the side
+      if (this.player1.y + this.player1.h > this.walls[i][1] && this.player1.y < this.walls[i][1] + this.walls[i][3] + 1
+                 && this.player1.x + this.player1.w >= this.walls[i][0] && this.player1.x <= this.walls[i][0] + this.walls[i][2]) {
+        // If player collides with wall on right
+        if (this.player1.x <= this.walls[i][0]) {
           this.player1.vX = 0;
           this.player1.isBlockedRight = true;
         }
-        // If player collides with platform on left
-        else if (this.player1.x + this.player1.w >= this.platforms[i][0] + this.platforms[i][2]) {
+        // If player collides with wall on left
+        else if (this.player1.x + this.player1.w >= this.walls[i][0] + this.walls[i][2]) {
           this.player1.vX = 0;
           this.player1.isBlockedLeft = true;
         }
       }
+
     }
-  }  // platformCollision method end 
+  } // wallCollision method end
 
 
   /**
@@ -528,13 +555,9 @@ public abstract class Level {
       //g.fillRect(0, level.FRAME_HEIGHT-100, level.FRAME_WIDTH, 100);
       
       // Draw platforms, walls, and end checkpoint
-      g.setColor(Color.GRAY);
       for (int i = 0; i < platforms.length; i++) {
-        if (i >= 3) {
+        if (i != 0) {
           g.drawImage(level.platformImage, level.platforms[i][0], level.platforms[i][1], this);
-        }
-        else if (i <= 1){
-          g.fillRect(level.platforms[i][0], level.platforms[i][1], level.platforms[i][2], level.platforms[i][3]);
         }
         else {
           // Draw end checkpoint/flag
@@ -543,6 +566,11 @@ public abstract class Level {
           g.setColor(Color.RED);
           g.fillRect(level.platforms[i][0], level.platforms[i][1], 75, 50);
         }
+      }
+
+      g.setColor(Color.GRAY);
+      for (int i = 0; i < walls.length; i++) {
+        g.fillRect(level.walls[i][0], level.walls[i][1], level.walls[i][2], level.walls[i][3]);
       }
 
       /* Draw Bullets */

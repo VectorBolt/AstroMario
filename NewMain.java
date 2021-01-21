@@ -21,11 +21,16 @@ public class NewMain {
     window = new JFrame("Space Window");
     window.setSize(FRAME_WIDTH, FRAME_HEIGHT);
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    window.setVisible(true);
     
     do {
       levels[0] = new Level1(window);
       died = levels[0].myMain();
+      
+    } while (died);
+
+    do {
+      levels[1] = new Level2(window);
+      died = levels[1].myMain();
       
     } while (died);
     
