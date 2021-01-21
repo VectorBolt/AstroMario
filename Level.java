@@ -81,7 +81,7 @@ public abstract class Level {
   boolean inPlay;
   boolean failedLevel;
   boolean wonLevel;
-  boolean restarted;
+  boolean endedLevel;
 
 //---------------------------------------------------------------------------------
 
@@ -124,7 +124,7 @@ public abstract class Level {
     this.inPlay = true;
     this.failedLevel = false;
     this.wonLevel = false;
-    this.restarted = false;
+    this.endedLevel = false;
 
     this.window.setVisible(true);
     this.runGameLoop();
@@ -264,7 +264,7 @@ public abstract class Level {
 //---------------------------------------------------------------------------------
   
   public void endLevel() {
-    while (!this.restarted) {
+    while (!this.endedLevel) {
       // Display death menu
       this.window.repaint();
       try {
@@ -525,7 +525,7 @@ public abstract class Level {
 
       // Draw Ground
       g.setColor(Color.GREEN);
-      g.fillRect(0, level.FRAME_HEIGHT-100, level.FRAME_WIDTH, 100);
+      //g.fillRect(0, level.FRAME_HEIGHT-100, level.FRAME_WIDTH, 100);
       
       // Draw platforms, walls, and end checkpoint
       g.setColor(Color.GRAY);
@@ -706,13 +706,12 @@ public abstract class Level {
       // If player is in menu
       else if (level.failedLevel) {
         if (key == KeyEvent.VK_SPACE) {
-          level.restarted = true;
+          level.endedLevel = true;
         }
       }
       else if (level.wonLevel) {
         if (key == KeyEvent.VK_SPACE) {
-          level.wonLevel = false;
-          level.inPlay = true;
+          level.endedLevel = true;
         }
       }
       

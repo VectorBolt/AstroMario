@@ -11,7 +11,8 @@ public class NewMain {
   static final int FRAME_HEIGHT = 720;
   
   // Level end conditions
-  static boolean[] died = new boolean[1];
+  static Level[] levels = new Level[4];
+  static boolean died;
 
 
   // MAIN METHOD
@@ -22,13 +23,11 @@ public class NewMain {
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     window.setVisible(true);
     
-    Level level1;
-
     do {
-      level1 = new Level1(window);
-      died[0] = level1.myMain();
+      levels[0] = new Level1(window);
+      died = levels[0].myMain();
       
-    } while (died[0]);
+    } while (died);
     
   }
 
