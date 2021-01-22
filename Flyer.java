@@ -1,4 +1,3 @@
-
 /* Imports */
 import java.awt.*;
 // Image imports
@@ -20,7 +19,6 @@ public class Flyer extends Goomba {
         this.images[i] = ImageIO.read(new File("images/flyer" + i + ".png"));
       };
     } catch (Exception e) {}
-
   }
 
   /**
@@ -53,7 +51,5 @@ public class Flyer extends Goomba {
 
     this.hitbox.setLocation(this.x, this.y);
     this.collision(player);
-
   }
-
 }

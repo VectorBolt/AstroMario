@@ -17,6 +17,5 @@ public class Crab extends Goomba {
         this.images[i] = ImageIO.read(new File("images/crab" + i + ".png"));
       };
     } catch (Exception e) {}
-
   }
 }

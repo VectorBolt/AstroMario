@@ -39,7 +39,6 @@ public abstract class Enemy {
       player.isInvulnerable = true;
     }
   }
-  
 
   /**
    * move
@@ -74,5 +73,4 @@ public abstract class Enemy {
       this.walkFrame = 0;
     }
   }
-
 }

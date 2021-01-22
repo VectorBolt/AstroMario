@@ -1,4 +1,3 @@
-
 /* Imports */
 import java.awt.*;
 // Image imports
@@ -19,6 +18,5 @@ public class Bee extends Goomba {
         this.images[i] = ImageIO.read(new File("images/bee" + i + ".png"));
       };
     } catch (Exception e) {}
-
   }
 }

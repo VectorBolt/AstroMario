@@ -44,4 +44,3 @@ public class Goomba extends Enemy {
     this.walkFrame = 0.0;
   }
 }
-
