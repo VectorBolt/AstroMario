@@ -8,11 +8,15 @@
 
 /* Imports */
 import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
 // Image imports
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+// Sound Imports
+import javax.sound.sampled.*; 
 
 public class Player {
   
@@ -26,6 +30,9 @@ public class Player {
   // Images
   BufferedImage[] images = new BufferedImage[12];
   BufferedImage currentImage;
+  // Sound Effects
+  AudioInputStream audioStream;
+  Clip jumpSound;
   
   // Player States
   boolean facingRight, isWalking, isJumping, isSwimming, isInvulnerable, isBlockedRight, isBlockedLeft, isOnIce;
@@ -76,7 +83,16 @@ public class Player {
     // health
     this.hitbox = new Rectangle(this.x, this.y, this.w, this.h);
     this.health = 3;
-    
+
+    // Sound Effects
+    try {
+      File audioFile = new File("sounds/Jump.wav");
+      this.audioStream = AudioSystem.getAudioInputStream(audioFile);
+      this.jumpSound = AudioSystem.getClip();
+      this.jumpSound.open(audioStream);
+      this.jumpSound.addLineListener(new JumpListener(this));
+    } catch (Exception ex){} 
+
   }
   
   /*
@@ -109,4 +125,22 @@ public class Player {
       }
     }
   }
+
+  // SOUND EFFECT LISTENER
+  class JumpListener implements LineListener {
+    Player player;
+    
+    public JumpListener(Player player) {
+      super();
+      this.player = player;
+    }
+
+    public void update(LineEvent event) {
+      if (event.getType() == LineEvent.Type.STOP) {
+        player.jumpSound.flush();              // clear the buffer with audio data
+        player.jumpSound.setFramePosition(0);  // prepare to start from the beginning
+      }
+    }
+  } 
+
 }

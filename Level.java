@@ -393,9 +393,8 @@ public abstract class Level {
         this.chargeLength[i] = 0;  
       }
       else if (this.energyGun.bulletVisible[i]) {
-        this.energyGun.bulletBoxes[i] = new Rectangle(
-                                                      this.energyGun.bulletLocs[i][0], this.energyGun.bulletLocs[i][1], this.energyGun.bulletW, this.energyGun.bulletH
-                                                     );  // Update hitbox
+        this.energyGun.bulletBoxes[i] = new Rectangle(this.energyGun.bulletLocs[i][0], this.energyGun.bulletLocs[i][1], 
+                                                      this.energyGun.bulletW, this.energyGun.bulletH);  // Update hitbox
         this.beamFade[i] += 20;
         // If an enemy is hit
         for (int enemyType = 0; enemyType < this.enemies.length; enemyType++) {
@@ -417,7 +416,6 @@ public abstract class Level {
     }
     
   }
-  
   
   /**
    * platformCollision
@@ -444,11 +442,9 @@ public abstract class Level {
           if (isIcy) {
             this.player1.isOnIce = true;
           }
-
           if (!this.player1.isWalking && !this.player1.isOnIce) {
             this.player1.vX = 0;
           }
-
         }
         
         // If the player bumps their head on the platform from below
@@ -461,7 +457,6 @@ public abstract class Level {
       }
     }
   }  // platformCollision method end 
-  
   
   /**
    * wallCollision
@@ -522,7 +517,6 @@ public abstract class Level {
         this.jumpCount = 0; // Give player infinite jumps when in water
       }
     }
-    
   } // waterPhysics method end
   
   /* GRAPHICS PANEL */
@@ -550,7 +544,6 @@ public abstract class Level {
       g.drawImage(level.background2, level.background2X, level.background2Y, this);
       
       // Draw Water
-      g.setColor(Color.BLUE);
       for (int i = 0; i < level.water.length; i++) {
         g.drawImage(level.waterImage, (int)level.water[i].getX(), (int)level.water[i].getY(), this);
       }
@@ -616,7 +609,8 @@ public abstract class Level {
       }
       
       // Energy gun
-      g.setColor(Color.BLUE);
+      Color myBlue = new Color(0, 190, 255);
+      g.setColor(myBlue);
       for (int i = 0; i < level.energyGun.numBullets; i++) {
         level.energyGun.bulletLocs[i][1] = level.player1.y + level.player1.h/5;
         if (level.energyGun.charging[i]) {
@@ -741,6 +735,7 @@ public abstract class Level {
         
         level.player1.isBlockedLeft = false;
         level.player1.isBlockedRight = false;
+        level.player1.jumpSound.start();
         
       }
       
