@@ -28,7 +28,7 @@ public class Player {
   BufferedImage currentImage;
   
   // Player States
-  boolean facingRight, isWalking, isJumping, isSwimming, isInvulnerable, isBlockedRight, isBlockedLeft;
+  boolean facingRight, isWalking, isJumping, isSwimming, isInvulnerable, isBlockedRight, isBlockedLeft, isOnIce;
   double walkFrame;
   int invulnerabilityCounter;
   

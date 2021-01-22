@@ -50,6 +50,12 @@
        {1730, 480, 245, 65},
      };
 
+     this.icePlatforms = new int[][] {
+       {2500, 350, 278, 65},
+       {3000, 350, 278, 65},
+     };
+
+
      // Wall Properties
      this.walls = new int[][] {
        // Start wall

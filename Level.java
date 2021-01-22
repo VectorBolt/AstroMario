@@ -52,8 +52,10 @@ public abstract class Level {
   
   // Platform properties
   int[][] platforms;
-  BufferedImage platformImage;
+  int[][] icePlatforms;
   int[][] walls;
+  BufferedImage platformImage;
+  BufferedImage icePlatformImage;
   
   // Spike properties
   int[][] spikes;
@@ -115,6 +117,7 @@ public abstract class Level {
       this.background1 = ImageIO.read(new File("images/space copy.png"));
       this.background2 = ImageIO.read(new File("images/space copy flipped.png"));
       this.platformImage = ImageIO.read(new File("images/platform.png"));
+      this.icePlatformImage = ImageIO.read(new File("images/icePlatform.png"));
       this.waterImage = ImageIO.read(new File("images/water.png"));
       this.spikeImage = ImageIO.read(new File("images/spikes.png"));
       for (int i = 0; i < 2; i++) {
@@ -156,6 +159,10 @@ public abstract class Level {
       // Scroll platforms
       for (int i = 0; i < this.platforms.length; i++) {
         this.platforms[i][0] -= this.player1.vX - this.collisionShift;
+      }
+      // Scroll platforms
+      for (int i = 0; i < this.icePlatforms.length; i++) {
+        this.icePlatforms[i][0] -= this.player1.vX - this.collisionShift;
       }
       for (int i = 0; i < this.water.length; i++) {
         this.water[i].setLocation((int)this.water[i].getX() - this.player1.vX + this.collisionShift, (int)this.water[i].getY());
@@ -219,9 +226,17 @@ public abstract class Level {
         this.player1.vY = 0;
         this.jumpCount = 0;
         this.player1.isJumping = false;
+
+        // Reset Ice Physics
+        this.player1.isOnIce = false;
+        if (!this.player1.isWalking) {
+          this.player1.vX = 0;
+        }
+
       }
       
-      this.platformCollision();
+      this.platformCollision(this.platforms, false);
+      this.platformCollision(this.icePlatforms, true);
       this.wallCollision();
       
       // Iterate over each frame of walking
@@ -409,26 +424,38 @@ public abstract class Level {
    * This method iterates over each platform and checks if the player is touching it.
    * Based on which edge the player is touching, the player's velocity is adjusted.
    */
-  public void platformCollision() {
+  public void platformCollision(int[][] platArray, boolean isIcy) {
     
     // Iterate over each platform
     
-    for (int i = 0; i < this.platforms.length; i++) {
-      if (i > 0) {
+    for (int i = 0; i < platArray.length; i++) {
+      if (isIcy || i > 0) {
         // If the player is on top of the platform
-        if (this.player1.y >= this.platforms[i][1] - this.player1.h && this.player1.y <= this.platforms[i][1]
-              && this.player1.x + this.player1.w > this.platforms[i][0] && this.player1.x < this.platforms[i][0] + this.platforms[i][2]) {
-          this.player1.y = this.platforms[i][1] - this.player1.h - 1;
+        if (this.player1.y >= platArray[i][1] - this.player1.h && this.player1.y <= platArray[i][1]
+              && this.player1.x + this.player1.w > platArray[i][0] && this.player1.x < platArray[i][0] + platArray[i][2]) {
+          this.player1.y = platArray[i][1] - this.player1.h - 1;
           this.player1.vY = 0;
           this.jumpCount = 0;
           this.player1.isJumping = false;
+          this.player1.isOnIce = false; // reset to false before checking if the player is on ice
+
+          // Reset Ice Physics before checking if the player is on ice
+          this.player1.isOnIce = false;
+          if (isIcy) {
+            this.player1.isOnIce = true;
+          }
+
+          if (!this.player1.isWalking && !this.player1.isOnIce) {
+            this.player1.vX = 0;
+          }
+
         }
         
         // If the player bumps their head on the platform from below
-        else if (this.player1.y + this.player1.h > this.platforms[i][1] && this.player1.y < this.platforms[i][1] + this.platforms[i][3]
-                   && this.player1.x + this.player1.w >= this.platforms[i][0] && this.player1.x <= this.platforms[i][0] + this.platforms[i][2]) {
+        else if (this.player1.y + this.player1.h > platArray[i][1] && this.player1.y < platArray[i][1] + platArray[i][3]
+                   && this.player1.x + this.player1.w >= platArray[i][0] && this.player1.x <= platArray[i][0] + platArray[i][2]) {
           
-          this.player1.y = this.platforms[i][1] + this.platforms[i][3] + 1;
+          this.player1.y = platArray[i][1] + platArray[i][3] + 1;
           this.player1.vY = 0;
         }
       }
@@ -556,7 +583,6 @@ public abstract class Level {
       
       // Draw Ground
       g.setColor(Color.GREEN);
-      //g.fillRect(0, level.FRAME_HEIGHT-100, level.FRAME_WIDTH, 100);
       
       // Draw platforms, walls, and end checkpoint
       for (int i = 0; i < platforms.length; i++) {
@@ -570,6 +596,9 @@ public abstract class Level {
           g.setColor(Color.RED);
           g.fillRect(level.platforms[i][0], level.platforms[i][1], 75, 50);
         }
+      }
+      for (int i = 0; i < icePlatforms.length; i++) {
+        g.drawImage(level.icePlatformImage, level.icePlatforms[i][0], level.icePlatforms[i][1], this);
       }
       
       g.setColor(Color.GRAY);
@@ -764,11 +793,15 @@ public abstract class Level {
       int key = e.getKeyCode();
       // Stop moving when key is released
       if ((key == KeyEvent.VK_A && !level.player1.facingRight) || (key == KeyEvent.VK_D && level.player1.facingRight)) {
-        level.player1.vX = 0;
+        // Do not stop moving if the player is on ice
+        if (!level.player1.isOnIce) {
+          level.player1.vX = 0;
+          level.collisionShift = 0;
+        }
+
         level.player1.isWalking = false;
         level.player1.walkFrame = 0;
         
-        level.collisionShift = 0;
       }
       // Reset shot delay for basic gun
       else if (key == KeyEvent.VK_SPACE) {
