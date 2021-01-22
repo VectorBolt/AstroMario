@@ -85,6 +85,7 @@ public abstract class Level {
   boolean failedLevel;
   boolean wonLevel;
   boolean endedLevel;
+  BufferedImage deathImage;
   
 //---------------------------------------------------------------------------------
   
@@ -123,6 +124,7 @@ public abstract class Level {
       for (int i = 0; i < 2; i++) {
         this.energyBeam[i] = ImageIO.read(new File("images/EnergyBeam" + i + ".png"));
       }
+      this.deathImage = ImageIO.read(new File("images/gravestone.png"));
     } catch (Exception e) {} 
     
     this.inPlay = true;
@@ -226,6 +228,8 @@ public abstract class Level {
         this.player1.vY = 0;
         this.jumpCount = 0;
         this.player1.isJumping = false;
+        this.player1.isBlockedRight = false;
+        this.player1.isBlockedLeft = false;
 
         // Reset Ice Physics
         this.player1.isOnIce = false;
@@ -492,7 +496,7 @@ public abstract class Level {
     
     // Reset player properties and gravity to normal before checking if the player is in water.
     this.player1.isSwimming = false; 
-    this.player1.jumpSpeed = -30;
+    this.player1.jumpSpeed = -28;
     this.player1.speed = 10;
     this.gravity = 2.0;
     
@@ -658,6 +662,9 @@ public abstract class Level {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
         
+        // Draw little gravestone image
+        g.drawImage(deathImage, FRAME_WIDTH/2 - 115, FRAME_HEIGHT/2 - 84, this);
+        
         // Display game over information
         g.setColor(Color.WHITE);
         g.setFont(new Font("TimesRoman", Font.BOLD, 150));
@@ -666,8 +673,10 @@ public abstract class Level {
         g.drawString("Press space to try again.", FRAME_WIDTH/2 - 235, FRAME_HEIGHT/2 + 220);
       }
       else if (level.wonLevel) {
-        // FIll game window with yellow
-        g.setColor(Color.YELLOW);
+        // FIll game window with yellow/gold
+        
+        Color gold = new Color(249, 166, 2);
+        g.setColor(gold);
         g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
         
         // Display victory information

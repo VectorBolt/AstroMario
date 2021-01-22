@@ -3,7 +3,7 @@
  * This class represents the energy gun
  * The energy gun shoots a large beam that kills everything in its way
  * @author Jeffrey Xu and Avneesh Verma
- * @version 1.0 January 18, 2020
+ * @version 1.0 January 18, 2021
  */
 
 /* Imports */
@@ -30,10 +30,10 @@ public class EnergyGun extends Gun {
     this.bulletW = 930;
     this.bulletH = 29;
     // Shooting and reloading
-    this.shotDelay = 2000;
+    this.shotDelay = 4000;
     this.reloadDelay = 3000;
-    this.beamDuration = 1000;
-    this.chargingTime = 2000;
+    this.beamDuration = 1500;
+    this.chargingTime = 2500;
     this.isShooting = false;
     this.charging = new boolean[numBullets];
     

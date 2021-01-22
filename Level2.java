@@ -55,7 +55,6 @@
        {3000, 350, 278, 65},
      };
 
-
      // Wall Properties
      this.walls = new int[][] {
        // Start wall
@@ -85,10 +84,5 @@
        new Rectangle(1620, 44, 320, 192),
        new Rectangle(1940, 44, 320, 192),
      };
-
-
    }
-
-
  }
-
