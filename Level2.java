@@ -26,7 +26,7 @@
 
      this.crabs = new Crab[] {
        new Crab(1732, 43, 100),
-       new Crab(1832, 478, 100)
+       new Crab(1832, 448, 100)
      };
 
      this.bees = new Bee[] {
@@ -47,7 +47,7 @@
          // Other platforms
        {1630, 75, 245, 65},
        {1915, 310, 245, 65},
-       {1730, 510, 245, 65},
+       {1730, 480, 245, 65},
      };
 
      // Wall Properties
