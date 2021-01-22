@@ -1,4 +1,3 @@
-
 /* Imports */
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +12,6 @@ public class NewMain {
   // Level end conditions
   static Level[] levels = new Level[4];
   static boolean died;
-
 
   // MAIN METHOD
   public static void main(String[] args) {
@@ -33,7 +31,5 @@ public class NewMain {
       died = levels[1].myMain();
       
     } while (died);
-    
   }
-
 }
