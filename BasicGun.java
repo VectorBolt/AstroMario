@@ -19,7 +19,7 @@ public class BasicGun extends Gun {
     this.curBullet = 0;
     this.bulletVelocities = new int[numBullets];
     this.bulletBoxes = new Rectangle[numBullets];
-    this.bulletDamage = 10;
+    this.bulletDamage = 25;
     // Location
     this.bulletLocs = new int[numBullets][numBullets]; // {{x1, y1}, {x2, y2}, etc}
     this.bulletW = 15;

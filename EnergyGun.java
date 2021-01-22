@@ -32,8 +32,8 @@ public class EnergyGun extends Gun {
     // Shooting and reloading
     this.shotDelay = 4000;
     this.reloadDelay = 3000;
-    this.beamDuration = 1000;
-    this.chargingTime = 3000;
+    this.beamDuration = 1500;
+    this.chargingTime = 2500;
     this.isShooting = false;
     this.charging = new boolean[numBullets];
     
