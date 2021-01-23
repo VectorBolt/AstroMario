@@ -135,32 +135,35 @@ public class Main {
     public void keyPressed(KeyEvent e) {
       int key = e.getKeyCode();
       
-      if (key == KeyEvent.VK_ENTER) {
-        if (infoPage) {
-          infoPage = false;
-        }
-        else {
-          if (buttonSelected[0]) {
-            inMenu = false;
+      if (inMenu) {
+        if (key == KeyEvent.VK_ENTER) {
+          if (infoPage) {
+            infoPage = false;
           }
-          else if (buttonSelected[1]) {
-            infoPage = true;
+          else {
+            if (buttonSelected[0]) {
+              inMenu = false;
+            }
+            else if (buttonSelected[1]) {
+              infoPage = true;
+            }
           }
         }
-      }
-      if (key == KeyEvent.VK_A && !buttonSelected[0]) {
-        if (!infoPage) {
-          buttonSelected[0] = true;
-          buttonSelected[1] = false;
+        if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT && !buttonSelected[0]) {
+          if (!infoPage) {
+            buttonSelected[0] = true;
+            buttonSelected[1] = false;
+          }
         }
-      }
-      else if (key == KeyEvent.VK_D && !buttonSelected[1]) {
-        if (!infoPage) {
-          buttonSelected[0] = false;
-          buttonSelected[1] = true;
+        else if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT && !buttonSelected[1]) {
+          if (!infoPage) {
+            buttonSelected[0] = false;
+            buttonSelected[1] = true;
+          }
         }
       }
     }
+
     public void keyReleased(KeyEvent e) {}
     public void keyTyped(KeyEvent e) {}
   }  // MyKeyListener class end
