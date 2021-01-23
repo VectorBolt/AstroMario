@@ -15,7 +15,7 @@ public class BasicGun extends Gun {
     
     /* VARIABLES */
     // Bullets
-    this.numBullets = 7;
+    this.numBullets = 8;
     this.curBullet = 0;
     this.bulletVelocities = new int[numBullets];
     this.bulletBoxes = new Rectangle[numBullets];

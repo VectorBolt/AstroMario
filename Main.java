@@ -68,10 +68,12 @@ public class Main {
       } while (died);
       
       // Level 3
+      
       do {
         levels[2] = new Level3(window);
         died = levels[2].myMain();
       } while (died);
+      
       victoryMenu = true;
       
       // Victory menu

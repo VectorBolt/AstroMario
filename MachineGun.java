@@ -15,8 +15,8 @@ public class MachineGun extends Gun {
     
     /* VARIABLES */
     // Bullets
-    this.bulletDamage = 5;
-    this.numBullets = 40;
+    this.bulletDamage = 3;
+    this.numBullets = 75;
     this.bulletVelocities = new int[numBullets];
     this.bulletBoxes = new Rectangle[numBullets];
     // Location
