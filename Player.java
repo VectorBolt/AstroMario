@@ -28,7 +28,7 @@ public class Player {
   double vY;
   
   // Images
-  BufferedImage[] images = new BufferedImage[9];
+  BufferedImage[] images = new BufferedImage[10];
   BufferedImage currentImage;
   // Sound Effects
   AudioInputStream audioStream;
@@ -63,7 +63,7 @@ public class Player {
     
     // Initialize images
     try {
-      for (int i = 0; i < 9; i++) {
+      for (int i = 0; i < 10; i++) {
         this.images[i] = ImageIO.read(new File("images/mario" + i + ".png"));
       }
       this.currentImage = this.images[4];
@@ -91,7 +91,7 @@ public class Player {
       this.jumpSound = AudioSystem.getClip();
       this.jumpSound.open(audioStream);
       this.jumpSound.addLineListener(new JumpListener(this));
-    } catch (Exception ex){} 
+    } catch (Exception e){} 
 
   }
   
