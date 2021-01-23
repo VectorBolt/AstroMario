@@ -600,7 +600,8 @@ public abstract class Level {
         g.drawImage(level.icePlatformImage, level.icePlatforms[i][0], level.icePlatforms[i][1], this);
       }
       
-      g.setColor(Color.GRAY);
+      Color brown = new Color(112, 84, 62);
+      g.setColor(brown);
       for (int i = 0; i < walls.length; i++) {
         g.fillRect(level.walls[i][0], level.walls[i][1], level.walls[i][2], level.walls[i][3]);
       }
@@ -679,7 +680,6 @@ public abstract class Level {
       }
       else if (level.wonLevel) {
         // FIll game window with yellow/gold
-        
         Color gold = new Color(249, 166, 2);
         g.setColor(gold);
         g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
@@ -707,7 +707,7 @@ public abstract class Level {
       int key = e.getKeyCode();
       
       // Horizontal Movement
-      if (key == KeyEvent.VK_A) {
+      if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) {
         level.player1.vX = -level.player1.speed;
         level.player1.facingRight = false;
         level.player1.isWalking = true;
@@ -722,7 +722,7 @@ public abstract class Level {
         
       }
       
-      else if (key == KeyEvent.VK_D) {
+      else if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) {
         level.player1.vX = level.player1.speed;
         level.player1.facingRight = true;
         level.player1.isWalking = true;
@@ -734,11 +734,10 @@ public abstract class Level {
         else {
           level.collisionShift = 0;
         }
-        
       }
       
       // Jump
-      if (key == KeyEvent.VK_W && jumpCount < 2) {
+      if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP && jumpCount < 2) {
         level.player1.vY = (double)level.player1.jumpSpeed;
         level.player1.isJumping = true;
         
@@ -750,7 +749,6 @@ public abstract class Level {
         level.player1.isBlockedLeft = false;
         level.player1.isBlockedRight = false;
         level.player1.jumpSound.start();
-        
       }
       
       // Fire
@@ -795,7 +793,6 @@ public abstract class Level {
           level.endedLevel = true;
         }
       }
-      
     } // end keyPressed
     
     public void keyReleased(KeyEvent e) {
