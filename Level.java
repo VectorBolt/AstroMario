@@ -137,14 +137,12 @@ public abstract class Level {
     this.window.setVisible(true);
     this.runGameLoop();
     this.endLevel();
-    this.window.setVisible(false);
     
     this.canvas.removeKeyListener(this.keyListener);
     this.window.removeKeyListener(this.keyListener);
     this.window.remove(this.canvas);
     
     return this.failedLevel;
-    
   }
   
 //---------------------------------------------------------------------------------
@@ -217,7 +215,6 @@ public abstract class Level {
       else if (this.curGun == this.machineGun && this.machineGun.isShooting) {
         this.machineGun.shoot(player1); 
       }
-      
       
       // Move Player when Jumping
       this.player1.vY += this.gravity;
@@ -359,10 +356,8 @@ public abstract class Level {
         }
       }
       
-      // If bullet touches a platform or wall
+      // If bullet touches a platform
       if (guntype.bulletVisible[i]) {
-        
-        // If bullet touches a platform 
         for (int k = 0; k < this.platforms.length; k++) {
           if (guntype.bulletBoxes[i].intersects(this.platforms[k][0], this.platforms[k][1], 
                                                 this.platforms[k][2], this.platforms[k][3])) {
@@ -377,8 +372,15 @@ public abstract class Level {
             guntype.bulletVisible[i] = false;
           }
         }
+        
+        // If bullet touches an ice platform
+        for (int k = 0; k < this.icePlatforms.length; k++) {
+          if (guntype.bulletBoxes[i].intersects(this.icePlatforms[k][0], this.icePlatforms[k][1], 
+                                                this.icePlatforms[k][2], this.icePlatforms[k][3])) {
+            guntype.bulletVisible[i] = false;
+          }
+        }
       }
-      
     }
   }  // moveBullets method end
   
@@ -580,9 +582,6 @@ public abstract class Level {
         }
       }
       
-      // Draw Ground
-      g.setColor(Color.GREEN);
-      
       // Draw platforms, walls, and end checkpoint
       for (int i = 0; i < platforms.length; i++) {
         if (i != 0) {
@@ -600,7 +599,7 @@ public abstract class Level {
         g.drawImage(level.icePlatformImage, level.icePlatforms[i][0], level.icePlatforms[i][1], this);
       }
       
-      Color brown = new Color(112, 84, 62);
+      Color brown = new Color(73, 43, 0);
       g.setColor(brown);
       for (int i = 0; i < walls.length; i++) {
         g.fillRect(level.walls[i][0], level.walls[i][1], level.walls[i][2], level.walls[i][3]);
@@ -737,7 +736,7 @@ public abstract class Level {
       }
       
       // Jump
-      if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP && jumpCount < 2) {
+      if ((key == KeyEvent.VK_W || key == KeyEvent.VK_UP ) && jumpCount < 2) {
         level.player1.vY = (double)level.player1.jumpSpeed;
         level.player1.isJumping = true;
         
@@ -797,23 +796,26 @@ public abstract class Level {
     
     public void keyReleased(KeyEvent e) {
       int key = e.getKeyCode();
-      // Stop moving when key is released
-      if ((key == KeyEvent.VK_A && !level.player1.facingRight) || (key == KeyEvent.VK_D && level.player1.facingRight)) {
-        // Do not stop moving if the player is on ice
-        if (!level.player1.isOnIce) {
-          level.player1.vX = 0;
-          level.collisionShift = 0;
+      
+      if (inPlay) {
+        // Stop moving when key is released
+        if ((key == KeyEvent.VK_A && !level.player1.facingRight) || (key == KeyEvent.VK_D && level.player1.facingRight)) {
+          // Do not stop moving if the player is on ice
+          if (!level.player1.isOnIce) {
+            level.player1.vX = 0;
+            level.collisionShift = 0;
+          }
+          
+          level.player1.isWalking = false;
+          level.player1.walkFrame = 0;
+          
         }
-
-        level.player1.isWalking = false;
-        level.player1.walkFrame = 0;
-        
-      }
-      // Reset shot delay for basic gun
-      else if (key == KeyEvent.VK_SPACE) {
-        level.curGun.isShooting = false;
-        if (level.curGun == level.basicGun) {
-          level.shotGap[0] = level.basicGun.shotDelay;
+        // Reset shot delay for basic gun
+        else if (key == KeyEvent.VK_SPACE) {
+          level.curGun.isShooting = false;
+          if (level.curGun == level.basicGun) {
+            level.shotGap[0] = level.basicGun.shotDelay;
+          }
         }
       }
     }

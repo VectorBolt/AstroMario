@@ -24,6 +24,7 @@ public class Main {
   static Level[] levels = new Level[4];
   static boolean died;
   static boolean inMenu = true;
+  static boolean victoryMenu = false;
   static boolean infoPage = false;
   static boolean[] buttonSelected = {false, false};
   
@@ -38,6 +39,7 @@ public class Main {
     canvas.addKeyListener(keyListener);
     window.setVisible(true);
     
+    // Main menu
     do {
       window.repaint();
       try {
@@ -65,8 +67,21 @@ public class Main {
     // Level 3
     do {
       levels[2] = new Level3(window);
-      died = levels[2].myMain();    
+      died = levels[2].myMain();
     } while (died);
+    victoryMenu = true;
+    
+    // Victory menu
+    window.add(canvas);
+    canvas.addKeyListener(keyListener);
+    canvas.requestFocusInWindow();
+    do {
+      window.repaint();
+      try {
+        Thread.sleep(100);
+      }
+      catch (Exception e) {}
+    } while (victoryMenu);
   }  // main method end
   
   /* GRAPHICS PANEL */
@@ -106,6 +121,15 @@ public class Main {
         g.drawString("Press SPACE to shoot", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 - 75);
         g.drawString("Press K to reload", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 - 25);
         g.drawString("Press 1, 2, and 3 to switch guns", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 + 25);
+      }
+      else if(victoryMenu) {
+        g.setColor(lightRed);
+        g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT); 
+        g.setColor(lightBlue);
+        g.setFont(new Font("TimesRoman", Font.ITALIC, 100));
+        g.drawString("You beat the game!", FRAME_WIDTH/2 - 395, 270);
+        g.setFont(new Font("Helvetica", Font.BOLD, 30));
+        g.drawString("Press Enter to return to the menu", FRAME_WIDTH/2 - 250, 600);
       }
       else {
         // Draw play button
