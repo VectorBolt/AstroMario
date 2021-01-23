@@ -14,6 +14,7 @@
      this.canvas = new GraphicsPanel(this);
 
      // Window
+     this.canvas.requestFocusInWindow();
      this.canvas.addKeyListener(this.keyListener);
      this.window.add(this.canvas);
 
@@ -92,9 +93,6 @@
        new Rectangle(200, 200, 60, 58)
      };
 
-
-   }
-
-
- }
+   } // End of Constructor
+ } // End of Level2 class
 
