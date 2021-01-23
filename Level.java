@@ -67,6 +67,7 @@ public abstract class Level {
   // Player
   Player player1;
   int collisionShift;
+  BufferedImage playerHearts;
   
   // Guns
   Gun basicGun;
@@ -125,6 +126,7 @@ public abstract class Level {
         this.energyBeam[i] = ImageIO.read(new File("images/EnergyBeam" + i + ".png"));
       }
       this.deathImage = ImageIO.read(new File("images/gravestone.png"));
+      this.playerHearts = ImageIO.read(new File("images/heart.png"));
     } catch (Exception e) {} 
     
     this.inPlay = true;
@@ -650,10 +652,13 @@ public abstract class Level {
       // Display Information
       g.setColor(Color.WHITE);
       g.setFont(new Font("Helvetica", Font.BOLD, 30));
-      g.drawString("Bullets: " + Integer.toString(level.curGun.numBullets - level.curGun.curBullet), 3*level.FRAME_WIDTH/4, 100);
-      g.drawString("Health: " + Integer.toString(level.player1.health), level.FRAME_WIDTH/8, 100);
+      g.drawString("Bullets: " + Integer.toString(level.curGun.numBullets - level.curGun.curBullet), 3*level.FRAME_WIDTH/4 + 100, 100);
+      g.drawString("Health: " + Integer.toString(level.player1.health), level.FRAME_WIDTH/8 - 100, 100);
+      for (int h = 0; h < level.player1.health; h++) {
+        g.drawImage(level.playerHearts, FRAME_WIDTH/8 - 90 + 40*h, 120, this);
+      }
       if (level.reloading) {
-        g.drawString("Reloading...", 3*level.FRAME_WIDTH/4, 150);
+        g.drawString("Reloading...", level.FRAME_WIDTH/2 - 93, 100);
       }
       
       // If player is dead
