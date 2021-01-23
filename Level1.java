@@ -22,19 +22,20 @@ public class Level1 extends Level {
     // Window
     this.canvas.addKeyListener(this.keyListener);
     this.window.add(this.canvas);
+    this.canvas.requestFocusInWindow();
     
-    this.player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -28);
+    this.player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -30);
     
     // Enemy Properties
-    this.goombas = new Goomba[32];
+    this.goombas = new Goomba[28];
     // Initialize Goombas
     this.goombas[0] = new Goomba(530, FRAME_HEIGHT-GROUND_HEIGHT-172, 100);
     this.goombas[1] = new Goomba(3*FRAME_WIDTH/4 + 75, FRAME_HEIGHT - GROUND_HEIGHT - 282, 100);
-    for (int g = 2; g < 17; g++) {
+    for (int g = 2; g < 15; g++) {
         this.goombas[g] = new Goomba(5*FRAME_WIDTH - 800 + 100*g, FRAME_HEIGHT - GROUND_HEIGHT - 32, 200);
     }
-    for (int k = 0; k < 15; k++) {
-      this.goombas[k + 17] = new Goomba(5*FRAME_WIDTH - 550 + 100*k, FRAME_HEIGHT - GROUND_HEIGHT - 32, 300);
+    for (int k = 0; k < 13; k++) {
+      this.goombas[k + 15] = new Goomba(5*FRAME_WIDTH - 550 + 100*k, FRAME_HEIGHT - GROUND_HEIGHT - 32, 300);
     }
     
     this.crabs = new Crab[] {
@@ -43,7 +44,8 @@ public class Level1 extends Level {
       new Crab(2*FRAME_WIDTH - 325, FRAME_HEIGHT - GROUND_HEIGHT - 172, 100),
       new Crab(4*FRAME_WIDTH + 510, FRAME_HEIGHT - GROUND_HEIGHT - 185, 100),
       new Crab(5*FRAME_WIDTH - 240, FRAME_HEIGHT - GROUND_HEIGHT - 282, 100),
-      new Crab(5*FRAME_WIDTH + 300, FRAME_HEIGHT - GROUND_HEIGHT - 387, 100)
+      new Crab(5*FRAME_WIDTH + 300, FRAME_HEIGHT - GROUND_HEIGHT - 387, 100),
+      new Crab(6*FRAME_WIDTH + 173, FRAME_HEIGHT - GROUND_HEIGHT - 257, 110)
     };
 
     this.bees = new Bee[] {
@@ -85,24 +87,32 @@ public class Level1 extends Level {
       {5*FRAME_WIDTH + 190, FRAME_HEIGHT - GROUND_HEIGHT - 355, 245, 60}
     };
 
-    this.icePlatforms = new int[][] {};
+    this.icePlatforms = new int[][] {
+      {6*FRAME_WIDTH - 300, FRAME_HEIGHT - GROUND_HEIGHT - 150, 278, 65},
+      {6*FRAME_WIDTH + 55, FRAME_HEIGHT - GROUND_HEIGHT - 225, 278, 65},
+      {6*FRAME_WIDTH + 374, FRAME_HEIGHT - GROUND_HEIGHT - 323, 278, 65},
+      {6*FRAME_WIDTH + 717, FRAME_HEIGHT - GROUND_HEIGHT - 423, 278, 65}
+    };
     
     // Wall Properties
     this.walls = new int[][] {
       // Start wall
-      {-500, 0, 550, FRAME_HEIGHT},
-        // End wall
-      {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT}
+      {-500, 0, 550, FRAME_HEIGHT - GROUND_HEIGHT + 5},
+      // End wall
+      {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT - GROUND_HEIGHT + 5}
     };
     
-    this.spikes = new int[22][4];
+    this.spikes = new int[32][4];
     // Initalize spikes
     this.spikes[0][0] = 2*FRAME_WIDTH - 425;
     this.spikes[1][0] = 2*FRAME_WIDTH - 300;
     this.spikes[2][0] = 2*FRAME_WIDTH;
     for (int s = 0; s < this.spikes.length; s++) {
-      if (s >= 3) {
+      if (s >= 3 && s <= 22) {
         this.spikes[s][0] = 2*FRAME_WIDTH + 300 + 125*(s-3);
+      }
+      else if (s >= 23) {
+        this.spikes[s][0] = 6*FRAME_WIDTH - 300 + 125*(s-23);
       }
       this.spikes[s][1] = FRAME_HEIGHT - GROUND_HEIGHT - 30;
       this.spikes[s][2] = 125;
@@ -121,13 +131,7 @@ public class Level1 extends Level {
       new Rectangle(3660, FRAME_HEIGHT - GROUND_HEIGHT - 450, 320, 192),
       new Rectangle(3660, FRAME_HEIGHT - GROUND_HEIGHT - 600, 320, 192),
       new Rectangle(4400, FRAME_HEIGHT - GROUND_HEIGHT - 350, 320, 192),
-      new Rectangle(4675, FRAME_HEIGHT - GROUND_HEIGHT - 350, 320, 192)
-    };
-
-    this.coins = new Rectangle[] {
-      new Rectangle(300, 300, 60, 58),
-      new Rectangle(200, 200, 60, 58),
-      new Rectangle(100, 100, 60, 58),
+      new Rectangle(4675, FRAME_HEIGHT - GROUND_HEIGHT - 350, 320, 192),
     };
   }
 }

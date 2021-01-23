@@ -14,8 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-// Sound Imports
-import javax.sound.sampled.*; 
 
 //---------------------------------------------------------------------------------
 
@@ -63,20 +61,13 @@ public abstract class Level {
   int[][] spikes;
   BufferedImage spikeImage;
   
-  // Water
   Rectangle[] water;
   BufferedImage waterImage;
-
-  // Coins
-  Rectangle coins[];
-  boolean coinsCollected[];
-  BufferedImage coinImage;
-  BufferedImage smallCoinImage;
   
   // Player
   Player player1;
   int collisionShift;
-  BufferedImage heartImage;
+  BufferedImage playerHearts;
   
   // Guns
   Gun basicGun;
@@ -89,17 +80,13 @@ public abstract class Level {
   int[] beamFade;
   int[] chargeLength;
   BufferedImage[] energyBeam = new BufferedImage[2];
-
-
-  // Sound Effects
-  AudioInputStream audioStream;
-  Clip coinSound;
   
   // Game
   boolean inPlay;
   boolean failedLevel;
   boolean wonLevel;
   boolean endedLevel;
+  BufferedImage deathImage;
   
 //---------------------------------------------------------------------------------
   
@@ -127,12 +114,6 @@ public abstract class Level {
     this.beamFade = new int[] {0,0,0};
     this.chargeLength = new int[] {0,0,0};
     
-    // Coins
-    this.coinsCollected = new boolean[3];
-    for (int i = 0; i < coins.length; i++) {
-      this.coinsCollected[i] = false;
-    }
-    
     // Images
     try {
       this.background1 = ImageIO.read(new File("images/space copy.png"));
@@ -141,19 +122,11 @@ public abstract class Level {
       this.icePlatformImage = ImageIO.read(new File("images/icePlatform.png"));
       this.waterImage = ImageIO.read(new File("images/water.png"));
       this.spikeImage = ImageIO.read(new File("images/spikes.png"));
-      this.coinImage = ImageIO.read(new File("images/coin.png"));
-      this.smallCoinImage = ImageIO.read(new File("images/SmallCoin.png"));
-      this.heartImage = ImageIO.read(new File("images/heart.png"));
       for (int i = 0; i < 2; i++) {
         this.energyBeam[i] = ImageIO.read(new File("images/EnergyBeam" + i + ".png"));
       }
-
-      File audioFile = new File("sounds/CoinSound.wav");
-      this.audioStream = AudioSystem.getAudioInputStream(audioFile);
-      this.coinSound = AudioSystem.getClip();
-      this.coinSound.open(audioStream);
-      this.coinSound.addLineListener(new CoinListener(this));
-
+      this.deathImage = ImageIO.read(new File("images/gravestone.png"));
+      this.playerHearts = ImageIO.read(new File("images/heart.png"));
     } catch (Exception e) {} 
     
     this.inPlay = true;
@@ -164,14 +137,12 @@ public abstract class Level {
     this.window.setVisible(true);
     this.runGameLoop();
     this.endLevel();
-    this.window.setVisible(false);
     
     this.canvas.removeKeyListener(this.keyListener);
     this.window.removeKeyListener(this.keyListener);
     this.window.remove(this.canvas);
     
     return this.failedLevel;
-    
   }
   
 //---------------------------------------------------------------------------------
@@ -212,15 +183,6 @@ public abstract class Level {
         }
       }
       
-      // Scroll coins
-      for (int i = 0; i < this.coins.length; i++) {
-        this.coins[i].setLocation((int)this.coins[i].getX() - this.player1.vX + this.collisionShift, (int)this.coins[i].getY());
-        if (!this.coinsCollected[i] && this.player1.hitbox.intersects(this.coins[i])) {
-          this.coinsCollected[i] = true;
-          this.coinSound.start();
-        }
-      }
-      
       // Scroll Enemies
       for (int enemyType = 0; enemyType < enemies.length; enemyType++) {
         for (int curEnemy = 0; curEnemy < enemies[enemyType].length; curEnemy++) {
@@ -254,7 +216,6 @@ public abstract class Level {
         this.machineGun.shoot(player1); 
       }
       
-      
       // Move Player when Jumping
       this.player1.vY += this.gravity;
       this.player1.y += (int)this.player1.vY;
@@ -266,6 +227,8 @@ public abstract class Level {
         this.player1.vY = 0;
         this.jumpCount = 0;
         this.player1.isJumping = false;
+        this.player1.isBlockedRight = false;
+        this.player1.isBlockedLeft = false;
 
         // Reset Ice Physics
         this.player1.isOnIce = false;
@@ -393,10 +356,8 @@ public abstract class Level {
         }
       }
       
-      // If bullet touches a platform or wall
+      // If bullet touches a platform
       if (guntype.bulletVisible[i]) {
-        
-        // If bullet touches a platform 
         for (int k = 0; k < this.platforms.length; k++) {
           if (guntype.bulletBoxes[i].intersects(this.platforms[k][0], this.platforms[k][1], 
                                                 this.platforms[k][2], this.platforms[k][3])) {
@@ -411,8 +372,15 @@ public abstract class Level {
             guntype.bulletVisible[i] = false;
           }
         }
+        
+        // If bullet touches an ice platform
+        for (int k = 0; k < this.icePlatforms.length; k++) {
+          if (guntype.bulletBoxes[i].intersects(this.icePlatforms[k][0], this.icePlatforms[k][1], 
+                                                this.icePlatforms[k][2], this.icePlatforms[k][3])) {
+            guntype.bulletVisible[i] = false;
+          }
+        }
       }
-      
     }
   }  // moveBullets method end
   
@@ -558,9 +526,6 @@ public abstract class Level {
       }
     }
   } // waterPhysics method end
-
-
-//---------------------------------------------------------------------------------
   
   /* GRAPHICS PANEL */
   class GraphicsPanel extends JPanel {
@@ -602,15 +567,8 @@ public abstract class Level {
       }
       
       // Draw Spikes
-      for (int i = 0; i < level.spikes.length; i++) {
+      for (int i = 0; i < spikes.length; i++) {
         g.drawImage(level.spikeImage, level.spikes[i][0], level.spikes[i][1], this);
-      }
-
-      // Draw Coins
-      for (int i = 0; i < level.coins.length; i++) {
-        if(!level.coinsCollected[i]) {
-          g.drawImage(level.coinImage, (int)level.coins[i].getX(), (int)level.coins[i].getY(), this);
-        }
       }
       
       // Draw Enemies
@@ -623,9 +581,6 @@ public abstract class Level {
           }
         }
       }
-      
-      // Draw Ground
-      g.setColor(Color.GREEN);
       
       // Draw platforms, walls, and end checkpoint
       for (int i = 0; i < platforms.length; i++) {
@@ -644,7 +599,8 @@ public abstract class Level {
         g.drawImage(level.icePlatformImage, level.icePlatforms[i][0], level.icePlatforms[i][1], this);
       }
       
-      g.setColor(Color.GRAY);
+      Color brown = new Color(73, 43, 0);
+      g.setColor(brown);
       for (int i = 0; i < walls.length; i++) {
         g.fillRect(level.walls[i][0], level.walls[i][1], level.walls[i][2], level.walls[i][3]);
       }
@@ -696,27 +652,23 @@ public abstract class Level {
       // Display Information
       g.setColor(Color.WHITE);
       g.setFont(new Font("Helvetica", Font.BOLD, 30));
-      g.drawString("Bullets: " + Integer.toString(level.curGun.numBullets - level.curGun.curBullet), 3*level.FRAME_WIDTH/4, 100);
-      //g.drawString("Health: " + Integer.toString(level.player1.health), level.FRAME_WIDTH/8, 100);
+      g.drawString("Bullets: " + Integer.toString(level.curGun.numBullets - level.curGun.curBullet), 3*level.FRAME_WIDTH/4 + 100, 100);
+      g.drawString("Health: " + Integer.toString(level.player1.health), level.FRAME_WIDTH/8 - 100, 100);
+      for (int h = 0; h < level.player1.health; h++) {
+        g.drawImage(level.playerHearts, FRAME_WIDTH/8 - 90 + 40*h, 120, this);
+      }
       if (level.reloading) {
-        g.drawString("Reloading...", 3*level.FRAME_WIDTH/4, 150);
+        g.drawString("Reloading...", level.FRAME_WIDTH/2 - 93, 100);
       }
-
-      for (int i = 0; i < player1.health; i++) {
-        g.drawImage(level.heartImage, level.FRAME_WIDTH/8 + i*45, 50, this);
-      }
-      for (int i = 0; i < coinsCollected.length; i++) {
-        if (coinsCollected[i]) {
-          g.drawImage(level.smallCoinImage, level.FRAME_WIDTH/8 + i*45, 95, this);
-        }
-      }
-
       
       // If player is dead
       if (level.failedLevel) {
         // Fill game window with black
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+        
+        // Draw little gravestone image
+        g.drawImage(deathImage, FRAME_WIDTH/2 - 115, FRAME_HEIGHT/2 - 84, this);
         
         // Display game over information
         g.setColor(Color.WHITE);
@@ -726,8 +678,9 @@ public abstract class Level {
         g.drawString("Press space to try again.", FRAME_WIDTH/2 - 235, FRAME_HEIGHT/2 + 220);
       }
       else if (level.wonLevel) {
-        // FIll game window with yellow
-        g.setColor(Color.YELLOW);
+        // FIll game window with yellow/gold
+        Color gold = new Color(249, 166, 2);
+        g.setColor(gold);
         g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
         
         // Display victory information
@@ -741,8 +694,6 @@ public abstract class Level {
     }  //PaintComponent method end
   }  //GraphicsPanel class end
   
-//---------------------------------------------------------------------------------
-
   /* KEY LISTENER */ 
   class MyKeyListener implements KeyListener {
     Level level;
@@ -755,7 +706,7 @@ public abstract class Level {
       int key = e.getKeyCode();
       
       // Horizontal Movement
-      if (key == KeyEvent.VK_A) {
+      if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) {
         level.player1.vX = -level.player1.speed;
         level.player1.facingRight = false;
         level.player1.isWalking = true;
@@ -770,7 +721,7 @@ public abstract class Level {
         
       }
       
-      else if (key == KeyEvent.VK_D) {
+      else if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) {
         level.player1.vX = level.player1.speed;
         level.player1.facingRight = true;
         level.player1.isWalking = true;
@@ -782,11 +733,10 @@ public abstract class Level {
         else {
           level.collisionShift = 0;
         }
-        
       }
       
       // Jump
-      if (key == KeyEvent.VK_W && jumpCount < 2) {
+      if ((key == KeyEvent.VK_W || key == KeyEvent.VK_UP ) && jumpCount < 2) {
         level.player1.vY = (double)level.player1.jumpSpeed;
         level.player1.isJumping = true;
         
@@ -798,7 +748,6 @@ public abstract class Level {
         level.player1.isBlockedLeft = false;
         level.player1.isBlockedRight = false;
         level.player1.jumpSound.start();
-        
       }
       
       // Fire
@@ -843,51 +792,34 @@ public abstract class Level {
           level.endedLevel = true;
         }
       }
-      
     } // end keyPressed
     
     public void keyReleased(KeyEvent e) {
       int key = e.getKeyCode();
-      // Stop moving when key is released
-      if ((key == KeyEvent.VK_A && !level.player1.facingRight) || (key == KeyEvent.VK_D && level.player1.facingRight)) {
-        // Do not stop moving if the player is on ice
-        if (!level.player1.isOnIce) {
-          level.player1.vX = 0;
-          level.collisionShift = 0;
+      
+      if (inPlay) {
+        // Stop moving when key is released
+        if ((key == KeyEvent.VK_A && !level.player1.facingRight) || (key == KeyEvent.VK_D && level.player1.facingRight)) {
+          // Do not stop moving if the player is on ice
+          if (!level.player1.isOnIce) {
+            level.player1.vX = 0;
+            level.collisionShift = 0;
+          }
+          
+          level.player1.isWalking = false;
+          level.player1.walkFrame = 0;
+          
         }
-
-        level.player1.isWalking = false;
-        level.player1.walkFrame = 0;
-        
-      }
-      // Reset shot delay for basic gun
-      else if (key == KeyEvent.VK_SPACE) {
-        level.curGun.isShooting = false;
-        if (level.curGun == level.basicGun) {
-          level.shotGap[0] = level.basicGun.shotDelay;
+        // Reset shot delay for basic gun
+        else if (key == KeyEvent.VK_SPACE) {
+          level.curGun.isShooting = false;
+          if (level.curGun == level.basicGun) {
+            level.shotGap[0] = level.basicGun.shotDelay;
+          }
         }
       }
     }
     
     public void keyTyped(KeyEvent e) {}
   }  //KeyListener class end
-
-
-  // SOUND EFFECT LISTENER
-  class CoinListener implements LineListener {
-    Level level;
-    
-    public CoinListener(Level level) {
-      super();
-      this.level = level;
-    }
-
-    public void update(LineEvent event) {
-      if (event.getType() == LineEvent.Type.STOP) {
-        level.coinSound.flush();              // clear the buffer with audio data
-        level.coinSound.setFramePosition(0);  // prepare to start from the beginning
-      }
-    }
-  } 
-
-}  //Main class end
+}  //Level class end
