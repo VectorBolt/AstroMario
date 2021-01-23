@@ -38,6 +38,7 @@ public class Main {
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     window.add(canvas);
     canvas.addKeyListener(keyListener);
+    window.setResizable(false);
     window.setVisible(true);
     
     // Main menu

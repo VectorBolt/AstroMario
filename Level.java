@@ -822,4 +822,4 @@ public abstract class Level {
     
     public void keyTyped(KeyEvent e) {}
   }  //KeyListener class end
-}  //Main class end
+}  //Level class end
