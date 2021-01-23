@@ -16,6 +16,7 @@
      // Window
      this.canvas.addKeyListener(this.keyListener);
      this.window.add(this.canvas);
+     this.canvas.requestFocusInWindow();
 
      this.player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -30);
 

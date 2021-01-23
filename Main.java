@@ -46,7 +46,6 @@ public class Main {
       catch (Exception e) {}
     } while (inMenu);
     // Exit menu and load game
-    window.setVisible(false);
     canvas.removeKeyListener(keyListener);
     window.removeKeyListener(keyListener);
     window.remove(canvas);
