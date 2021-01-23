@@ -59,9 +59,9 @@
      // Wall Properties
      this.walls = new int[][] {
        // Start wall
-       {-500, 0, 550, FRAME_HEIGHT},
+       {-500, 0, 550, FRAME_HEIGHT - GROUND_HEIGHT + 5},
          // End wall
-       {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT},
+       {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT - GROUND_HEIGHT + 5},
        // Other Walls
        {1620, 140, 100, 480},
        {2160, 0, 100, 480}

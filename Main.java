@@ -50,14 +50,22 @@ public class Main {
     window.removeKeyListener(keyListener);
     window.remove(canvas);
     
+    // Level 1
     do {
       levels[0] = new Level1(window);
       died = levels[0].myMain();
     } while (died);
 
+    // Level 2
     do {
       levels[1] = new Level2(window);
       died = levels[1].myMain();    
+    } while (died);
+    
+    // Level 3
+    do {
+      levels[2] = new Level3(window);
+      died = levels[2].myMain();    
     } while (died);
   }  // main method end
   
@@ -93,8 +101,8 @@ public class Main {
         g.setFont(new Font("Courier", Font.BOLD, 40));
         g.drawString("Avneesh Verma", FRAME_WIDTH/2 - 465, FRAME_HEIGHT/2 + 250);
         g.drawString("Jeffrey Xu", FRAME_WIDTH/2 + 210, FRAME_HEIGHT/2 + 250);
-        g.drawString("Press W to jump", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 - 175);
-        g.drawString("Press A and D to move left and right", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 - 125);
+        g.drawString("Press W/up to jump", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 - 175);
+        g.drawString("Press A/left and D/right to move left and right", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 - 125);
         g.drawString("Press SPACE to shoot", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 - 75);
         g.drawString("Press K to reload", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 - 25);
         g.drawString("Press 1, 2, and 3 to switch guns", FRAME_WIDTH/2 - 450, FRAME_HEIGHT/2 + 25);
@@ -148,13 +156,13 @@ public class Main {
             }
           }
         }
-        if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT && !buttonSelected[0]) {
+        if ((key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT ) && !buttonSelected[0]) {
           if (!infoPage) {
             buttonSelected[0] = true;
             buttonSelected[1] = false;
           }
         }
-        else if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT && !buttonSelected[1]) {
+        else if ((key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT ) && !buttonSelected[1]) {
           if (!infoPage) {
             buttonSelected[0] = false;
             buttonSelected[1] = true;

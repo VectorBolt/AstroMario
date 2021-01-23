@@ -97,9 +97,9 @@ public class Level1 extends Level {
     // Wall Properties
     this.walls = new int[][] {
       // Start wall
-      {-500, 0, 550, FRAME_HEIGHT},
-        // End wall
-      {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT}
+      {-500, 0, 550, FRAME_HEIGHT - GROUND_HEIGHT + 5},
+      // End wall
+      {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT - GROUND_HEIGHT + 5}
     };
     
     this.spikes = new int[32][4];
