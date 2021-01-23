@@ -23,7 +23,7 @@ public class Level1 extends Level {
     this.canvas.addKeyListener(this.keyListener);
     this.window.add(this.canvas);
     
-    this.player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -30);
+    this.player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -28);
     
     // Enemy Properties
     this.goombas = new Goomba[32];
@@ -121,7 +121,13 @@ public class Level1 extends Level {
       new Rectangle(3660, FRAME_HEIGHT - GROUND_HEIGHT - 450, 320, 192),
       new Rectangle(3660, FRAME_HEIGHT - GROUND_HEIGHT - 600, 320, 192),
       new Rectangle(4400, FRAME_HEIGHT - GROUND_HEIGHT - 350, 320, 192),
-      new Rectangle(4675, FRAME_HEIGHT - GROUND_HEIGHT - 350, 320, 192),
+      new Rectangle(4675, FRAME_HEIGHT - GROUND_HEIGHT - 350, 320, 192)
+    };
+
+    this.coins = new Rectangle[] {
+      new Rectangle(300, 300, 60, 58),
+      new Rectangle(200, 200, 60, 58),
+      new Rectangle(100, 100, 60, 58),
     };
   }
 }

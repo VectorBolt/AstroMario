@@ -17,7 +17,7 @@
      this.canvas.addKeyListener(this.keyListener);
      this.window.add(this.canvas);
 
-     this.player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -30);
+     this.player1 = new Player(FRAME_WIDTH/4, FRAME_HEIGHT-GROUND_HEIGHT-63, 10, -28);
 
      // Enemy Properties
      this.goombas = new Goomba[] {
@@ -84,6 +84,12 @@
        new Rectangle(1400, 44, 320, 192),
        new Rectangle(1620, 44, 320, 192),
        new Rectangle(1940, 44, 320, 192),
+     };
+
+     this.coins = new Rectangle[] {
+       new Rectangle(1832, 560, 60, 58),
+       new Rectangle(300, 300, 60, 58),
+       new Rectangle(200, 200, 60, 58)
      };
 
 

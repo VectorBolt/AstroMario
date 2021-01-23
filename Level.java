@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+// Sound Imports
+import javax.sound.sampled.*; 
 
 //---------------------------------------------------------------------------------
 
@@ -61,12 +63,20 @@ public abstract class Level {
   int[][] spikes;
   BufferedImage spikeImage;
   
+  // Water
   Rectangle[] water;
   BufferedImage waterImage;
+
+  // Coins
+  Rectangle coins[];
+  boolean coinsCollected[];
+  BufferedImage coinImage;
+  BufferedImage smallCoinImage;
   
   // Player
   Player player1;
   int collisionShift;
+  BufferedImage heartImage;
   
   // Guns
   Gun basicGun;
@@ -79,6 +89,11 @@ public abstract class Level {
   int[] beamFade;
   int[] chargeLength;
   BufferedImage[] energyBeam = new BufferedImage[2];
+
+
+  // Sound Effects
+  AudioInputStream audioStream;
+  Clip coinSound;
   
   // Game
   boolean inPlay;
@@ -112,6 +127,12 @@ public abstract class Level {
     this.beamFade = new int[] {0,0,0};
     this.chargeLength = new int[] {0,0,0};
     
+    // Coins
+    this.coinsCollected = new boolean[3];
+    for (int i = 0; i < coins.length; i++) {
+      this.coinsCollected[i] = false;
+    }
+    
     // Images
     try {
       this.background1 = ImageIO.read(new File("images/space copy.png"));
@@ -120,9 +141,19 @@ public abstract class Level {
       this.icePlatformImage = ImageIO.read(new File("images/icePlatform.png"));
       this.waterImage = ImageIO.read(new File("images/water.png"));
       this.spikeImage = ImageIO.read(new File("images/spikes.png"));
+      this.coinImage = ImageIO.read(new File("images/coin.png"));
+      this.smallCoinImage = ImageIO.read(new File("images/SmallCoin.png"));
+      this.heartImage = ImageIO.read(new File("images/heart.png"));
       for (int i = 0; i < 2; i++) {
         this.energyBeam[i] = ImageIO.read(new File("images/EnergyBeam" + i + ".png"));
       }
+
+      File audioFile = new File("sounds/CoinSound.wav");
+      this.audioStream = AudioSystem.getAudioInputStream(audioFile);
+      this.coinSound = AudioSystem.getClip();
+      this.coinSound.open(audioStream);
+      this.coinSound.addLineListener(new CoinListener(this));
+
     } catch (Exception e) {} 
     
     this.inPlay = true;
@@ -178,6 +209,15 @@ public abstract class Level {
             this.player1.health -= 1;
           }
           this.player1.isInvulnerable = true;
+        }
+      }
+      
+      // Scroll coins
+      for (int i = 0; i < this.coins.length; i++) {
+        this.coins[i].setLocation((int)this.coins[i].getX() - this.player1.vX + this.collisionShift, (int)this.coins[i].getY());
+        if (!this.coinsCollected[i] && this.player1.hitbox.intersects(this.coins[i])) {
+          this.coinsCollected[i] = true;
+          this.coinSound.start();
         }
       }
       
@@ -492,7 +532,7 @@ public abstract class Level {
     
     // Reset player properties and gravity to normal before checking if the player is in water.
     this.player1.isSwimming = false; 
-    this.player1.jumpSpeed = -30;
+    this.player1.jumpSpeed = -28;
     this.player1.speed = 10;
     this.gravity = 2.0;
     
@@ -518,6 +558,9 @@ public abstract class Level {
       }
     }
   } // waterPhysics method end
+
+
+//---------------------------------------------------------------------------------
   
   /* GRAPHICS PANEL */
   class GraphicsPanel extends JPanel {
@@ -559,8 +602,15 @@ public abstract class Level {
       }
       
       // Draw Spikes
-      for (int i = 0; i < spikes.length; i++) {
+      for (int i = 0; i < level.spikes.length; i++) {
         g.drawImage(level.spikeImage, level.spikes[i][0], level.spikes[i][1], this);
+      }
+
+      // Draw Coins
+      for (int i = 0; i < level.coins.length; i++) {
+        if(!level.coinsCollected[i]) {
+          g.drawImage(level.coinImage, (int)level.coins[i].getX(), (int)level.coins[i].getY(), this);
+        }
       }
       
       // Draw Enemies
@@ -647,10 +697,20 @@ public abstract class Level {
       g.setColor(Color.WHITE);
       g.setFont(new Font("Helvetica", Font.BOLD, 30));
       g.drawString("Bullets: " + Integer.toString(level.curGun.numBullets - level.curGun.curBullet), 3*level.FRAME_WIDTH/4, 100);
-      g.drawString("Health: " + Integer.toString(level.player1.health), level.FRAME_WIDTH/8, 100);
+      //g.drawString("Health: " + Integer.toString(level.player1.health), level.FRAME_WIDTH/8, 100);
       if (level.reloading) {
         g.drawString("Reloading...", 3*level.FRAME_WIDTH/4, 150);
       }
+
+      for (int i = 0; i < player1.health; i++) {
+        g.drawImage(level.heartImage, level.FRAME_WIDTH/8 + i*45, 50, this);
+      }
+      for (int i = 0; i < coinsCollected.length; i++) {
+        if (coinsCollected[i]) {
+          g.drawImage(level.smallCoinImage, level.FRAME_WIDTH/8 + i*45, 95, this);
+        }
+      }
+
       
       // If player is dead
       if (level.failedLevel) {
@@ -681,6 +741,8 @@ public abstract class Level {
     }  //PaintComponent method end
   }  //GraphicsPanel class end
   
+//---------------------------------------------------------------------------------
+
   /* KEY LISTENER */ 
   class MyKeyListener implements KeyListener {
     Level level;
@@ -809,4 +871,23 @@ public abstract class Level {
     
     public void keyTyped(KeyEvent e) {}
   }  //KeyListener class end
+
+
+  // SOUND EFFECT LISTENER
+  class CoinListener implements LineListener {
+    Level level;
+    
+    public CoinListener(Level level) {
+      super();
+      this.level = level;
+    }
+
+    public void update(LineEvent event) {
+      if (event.getType() == LineEvent.Type.STOP) {
+        level.coinSound.flush();              // clear the buffer with audio data
+        level.coinSound.setFramePosition(0);  // prepare to start from the beginning
+      }
+    }
+  } 
+
 }  //Main class end
