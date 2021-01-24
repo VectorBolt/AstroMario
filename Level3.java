@@ -34,7 +34,8 @@ public class Level3 extends Level {
       new Goomba(FRAME_WIDTH + 180, FRAME_HEIGHT - GROUND_HEIGHT - 32, 110),
       new Goomba(FRAME_WIDTH + 570, FRAME_HEIGHT - GROUND_HEIGHT - 32, 110),
       new Goomba(2*FRAME_WIDTH - 150, FRAME_HEIGHT - GROUND_HEIGHT - 32, 150),
-      new Goomba(5*FRAME_WIDTH + 340, FRAME_HEIGHT - GROUND_HEIGHT - 32, 200)
+      new Goomba(5*FRAME_WIDTH + 340, FRAME_HEIGHT - GROUND_HEIGHT - 32, 200),
+      new Goomba(6*FRAME_WIDTH + 114, FRAME_HEIGHT - GROUND_HEIGHT - 32, 200)
     };
     
     this.crabs = new Crab[] {
@@ -44,7 +45,7 @@ public class Level3 extends Level {
       new Crab(FRAME_WIDTH + 570, FRAME_HEIGHT - GROUND_HEIGHT - 302, 110),
       new Crab(2*FRAME_WIDTH + 260, 268, 110),
       new Crab(4*FRAME_WIDTH - 5, FRAME_HEIGHT - GROUND_HEIGHT - 199, 110),
-      new Crab(6*FRAME_WIDTH + 250, FRAME_HEIGHT - GROUND_HEIGHT - 32, 400)
+      new Crab(6*FRAME_WIDTH + 114, FRAME_HEIGHT - GROUND_HEIGHT - 296, 110)
     };
 
     this.bees = new Bee[] {
