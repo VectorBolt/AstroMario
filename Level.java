@@ -779,45 +779,55 @@ public abstract class Level {
       
       // Horizontal Movement
       if ((key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) && !level.player1.isBlockedLeft) {
-        level.player1.vX = -level.player1.speed;
-        level.player1.facingRight = false;
-        level.player1.isWalking = true;
+        try {
+          level.player1.vX = -level.player1.speed;
+          level.player1.facingRight = false;
+          level.player1.isWalking = true;
+        } catch (Exception ex) {}
       }
       
       else if ((key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) && !level.player1.isBlockedRight)  {
-        level.player1.vX = level.player1.speed;
-        level.player1.facingRight = true;
-        level.player1.isWalking = true;
+        try {
+          level.player1.vX = level.player1.speed;
+          level.player1.facingRight = true;
+          level.player1.isWalking = true;
+        } catch (Exception ex) {}
       }
       
       // Jump
       if ((key == KeyEvent.VK_W || key == KeyEvent.VK_UP ) && jumpCount < 2) {
-        level.player1.vY = (double)level.player1.jumpSpeed;
-        level.player1.isJumping = true;
+        try {
+          level.player1.vY = (double)level.player1.jumpSpeed;
+          level.player1.isJumping = true;
         
-        // Only increment jump counter if the player is not in water
-        if (!level.player1.isSwimming) {
-          level.jumpCount++;
-        }
-        level.player1.jumpSound.start();
+          // Only increment jump counter if the player is not in water
+          if (!level.player1.isSwimming) {
+            level.jumpCount++;
+          }
+          level.player1.jumpSound.start();
+        } catch (Exception ex) {}
       }
       
       // Fire
-      if (key == KeyEvent.VK_SPACE && !level.reloading && level.curGun.curBullet < level.curGun.numBullets) {   
-        level.shotGap[0] += 20;
-        level.curGun.isShooting = true;
+      if (key == KeyEvent.VK_SPACE && !level.reloading && level.curGun.curBullet < level.curGun.numBullets) {
+        try {
+          level.shotGap[0] += 20;
+          level.curGun.isShooting = true;
+        } catch (Exception ex) {}
       }
       
       // Reload
       if (key == KeyEvent.VK_K && level.curGun.numBullets - level.curGun.curBullet != level.curGun.numBullets && !level.reloading && !level.curGun.isShooting) {
-        level.reloadDelay = new Timer(curGun.reloadDelay, new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            level.reloading = curGun.reload(player1);
-            level.reloadDelay.stop();
-          }
-        });
-        level.reloadDelay.start();
-        level.reloading = true;
+        try {
+          level.reloadDelay = new Timer(curGun.reloadDelay, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              level.reloading = curGun.reload(player1);
+              level.reloadDelay.stop();
+            }
+          });
+          level.reloadDelay.start();
+          level.reloading = true;
+        } catch (Exception ex) {}
       }
       
       //Switch to basic gun
