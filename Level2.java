@@ -22,12 +22,12 @@
 
      // Enemy Properties
      this.goombas = new Goomba[] {
-       new Goomba(2022, 278, 100)
+       new Goomba(1990, 278, 50)
      };
 
      this.crabs = new Crab[] {
-       new Crab(1732, 43, 100),
-       new Crab(1832, 448, 100)
+       new Crab(1742, 43, 100),
+       new Crab(1802, 448, 80)
      };
 
      this.bees = new Bee[] {
@@ -36,7 +36,7 @@
 
      this.flyers = new Flyer[] {
        new Flyer(1100, 500, 100),
-       new Flyer(1800, 310, 75)
+       new Flyer(1800, 310, 70)
      };
 
      this.enemies = new Enemy[][] {goombas, crabs, bees, flyers};
@@ -46,9 +46,9 @@
          // End checkpoint/flag
        {7*FRAME_WIDTH - 375, FRAME_HEIGHT - 250, 75, 150},
          // Other platforms
-       {1630, 75, 245, 65},
+       {1640, 75, 245, 65},
        {1915, 310, 245, 65},
-       {1730, 480, 245, 65},
+       {1700, 480, 245, 65},
      };
 
      this.icePlatforms = new int[][] {
@@ -60,12 +60,12 @@
      // Wall Properties
      this.walls = new int[][] {
        // Start wall
-       {-500, 0, 550, FRAME_HEIGHT},
+       {-500, 0, 550, FRAME_HEIGHT-GROUND_HEIGHT+5},
          // End wall
        {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT},
        // Other Walls
-       {1620, 140, 100, 480},
-       {2160, 0, 100, 480}
+       {1620, 75, 100, 630},
+       {2080, -500, 100, 875}
      };
 
      this.spikes = new int[][] {
@@ -76,15 +76,18 @@
      };
 
      this.water = new Rectangle[] {
+       new Rectangle(1400, 75, 320, 192),
+       new Rectangle(1400, 267, 320, 192),
+       new Rectangle(1400, 367, 320, 192),
        new Rectangle(1400, 428, 320, 192),
+       /*
        new Rectangle(1620, 428, 320, 192),
        new Rectangle(1940, 428, 320, 192),
-       new Rectangle(1400, 236, 320, 192),
        new Rectangle(1620, 236, 320, 192),
        new Rectangle(1940, 236, 320, 192),
-       new Rectangle(1400, 44, 320, 192),
        new Rectangle(1620, 44, 320, 192),
        new Rectangle(1940, 44, 320, 192),
+       */
      };
 
      this.coins = new Rectangle[] {

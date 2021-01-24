@@ -186,6 +186,7 @@ public abstract class Level {
         Thread.sleep(20);
       } catch (Exception e) {}
       
+      this.wallCollision();
       this.waterPhysics(); // Check if the player is in water, and change physics accordingly
       this.moveBackground(); // Call method to move background as player moves
       
@@ -267,8 +268,6 @@ public abstract class Level {
         this.player1.vY = 0;
         this.jumpCount = 0;
         this.player1.isJumping = false;
-        this.player1.isBlockedRight = false;
-        this.player1.isBlockedLeft = false;
 
         // Reset Ice Physics
         this.player1.isOnIce = false;
@@ -280,7 +279,6 @@ public abstract class Level {
       
       this.platformCollision(this.platforms, false);
       this.platformCollision(this.icePlatforms, true);
-      this.wallCollision();
       
       // Iterate over each frame of walking
       if (this.player1.isWalking && !this.player1.isJumping) {
@@ -345,24 +343,22 @@ public abstract class Level {
    */
   public void moveBackground() {
     
-    if (!this.player1.isBlockedRight && !this.player1.isBlockedLeft) {
-      this.background1X -= this.player1.vX - this.collisionShift;
-      if (this.background1X + this.background1W <= 0) {
-        this.background1X = this.background2X - this.player1.vX + this.background2W;
-      }
-      else if (this.background1X >= this.FRAME_WIDTH) {
-        this.background1X = this.background2X - this.background2W - this.player1.vX;
-      }
-      
-      this.background2X -= this.player1.vX - this.collisionShift;
-      if (this.background2X + this.background2W <= 0) {
-        this.background2X = this.background1X + this.background1W;
-      }
-      else if (this.background2X >= this.FRAME_WIDTH) {
-        this.background2X = this.background1X - this.background1W;
-      }
+    this.background1X -= this.player1.vX - this.collisionShift;
+    if (this.background1X + this.background1W <= 0) {
+      this.background1X = this.background2X - this.player1.vX + this.background2W;
     }
-    
+    else if (this.background1X >= this.FRAME_WIDTH) {
+      this.background1X = this.background2X - this.background2W - this.player1.vX;
+    }
+
+    this.background2X -= this.player1.vX - this.collisionShift;
+    if (this.background2X + this.background2W <= 0) {
+      this.background2X = this.background1X + this.background1W;
+    }
+    else if (this.background2X >= this.FRAME_WIDTH) {
+      this.background2X = this.background1X - this.background1W;
+    }
+
   } // moveBackground method end
   
   
@@ -512,23 +508,39 @@ public abstract class Level {
    * Based on which edge the player is touching, the player's velocity is adjusted.
    */
   public void wallCollision() {
+    // Reset
+    this.player1.isBlockedRight = false;
+    this.player1.isBlockedLeft = false;
+
     for (int i = 0; i < this.walls.length; i++) {
       // If player hits wall from the side
       if (this.player1.y + this.player1.h > this.walls[i][1] && this.player1.y < this.walls[i][1] + this.walls[i][3] + 1
             && this.player1.x + this.player1.w >= this.walls[i][0] && this.player1.x <= this.walls[i][0] + this.walls[i][2]) {
-        // If player collides with wall on right
-        if (this.player1.x <= this.walls[i][0]) {
-          this.player1.vX = 0;
-          this.player1.isBlockedRight = true;
-        }
-        // If player collides with wall on left
-        else if (this.player1.x + this.player1.w >= this.walls[i][0] + this.walls[i][2]) {
+        // If player collides with wall on right side of wall
+        if (this.player1.x <= this.walls[i][0] + this.walls[i][2] && !this.player1.facingRight
+            && player1.x >= (this.walls[i][0] + this.walls[i][0] + this.walls[i][2])/2) {
           this.player1.vX = 0;
           this.player1.isBlockedLeft = true;
+          this.collisionShift = this.player1.x - (this.walls[i][0] + this.walls[i][2]);
+        }
+        // If player collides with wall on left side of wall
+        else if (this.player1.x + this.player1.w >= this.walls[i][0] && this.player1.facingRight
+            && this.player1.x <= (this.walls[i][0] + this.walls[i][0] + this.walls[i][2])/2) {
+          this.player1.vX = 0;
+          this.player1.isBlockedRight = true;
+          this.collisionShift = (this.player1.x + this.player1.w) - this.walls[i][0];
         }
       }
       
     }
+
+    if (this.player1.isWalking && this.player1.facingRight && !this.player1.isBlockedRight) {
+      this.player1.vX = this.player1.speed;
+    }
+    else if (this.player1.isWalking && !this.player1.facingRight && !this.player1.isBlockedLeft) {
+      this.player1.vX = -this.player1.speed;
+    }
+
   } // wallCollision method end
   
   /**
@@ -613,7 +625,7 @@ public abstract class Level {
         g.drawImage(level.spikeImage, level.spikes[i][0], level.spikes[i][1], this);
       }
       
-      // Draw Coins
+      // Draw Coins in Level
       for (int i = 0; i < level.coins.length; i++) {
         if(!level.coinsCollected[i]) {
           g.drawImage(level.coinImage, (int)level.coins[i].getX(), (int)level.coins[i].getY(), this);
@@ -703,14 +715,18 @@ public abstract class Level {
       g.setFont(new Font("Helvetica", Font.BOLD, 30));
       g.drawString("Bullets: " + Integer.toString(level.curGun.numBullets - level.curGun.curBullet), 3*level.FRAME_WIDTH/4 + 100, 60);
       g.drawString("Health: " + Integer.toString(level.player1.health), 60, 60);
+
+      // Draw hearts remaining
       for (int h = 0; h < level.player1.health; h++) {
-        g.drawImage(level.playerHearts, level.FRAME_WIDTH/8 - 90 + 40*h, 70, this);
+        g.drawImage(level.playerHearts, level.FRAME_WIDTH/8 - 91 + 40*h, 75, this);
       }
+      // Draw coins collected
       for (int i = 0; i < coinsCollected.length; i++) {
          if (coinsCollected[i]) {
-           g.drawImage(level.smallCoinImage, 3*level.FRAME_WIDTH/4 + 110 + i*40, 70, this);
+           g.drawImage(level.smallCoinImage, 3*level.FRAME_WIDTH/4 + 115 + 40*i, 75, this);
          }
       }
+
       if (level.reloading) {
         g.drawString("Reloading...", level.FRAME_WIDTH/2 - 93, 60);
       }
@@ -762,33 +778,16 @@ public abstract class Level {
       int key = e.getKeyCode();
       
       // Horizontal Movement
-      if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) {
+      if ((key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) && !level.player1.isBlockedLeft) {
         level.player1.vX = -level.player1.speed;
         level.player1.facingRight = false;
         level.player1.isWalking = true;
-        level.player1.isBlockedRight = false;
-        
-        if (level.player1.isBlockedLeft) {
-          level.collisionShift = level.player1.vX;
-        }
-        else {
-          level.collisionShift = 0;
-        }
-        
       }
       
-      else if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) {
+      else if ((key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) && !level.player1.isBlockedRight)  {
         level.player1.vX = level.player1.speed;
         level.player1.facingRight = true;
         level.player1.isWalking = true;
-        
-        level.player1.isBlockedLeft = false;
-        if (level.player1.isBlockedRight) {   
-          level.collisionShift = player1.vX;
-        }
-        else {
-          level.collisionShift = 0;
-        }
       }
       
       // Jump
@@ -800,9 +799,6 @@ public abstract class Level {
         if (!level.player1.isSwimming) {
           level.jumpCount++;
         }
-        
-        level.player1.isBlockedLeft = false;
-        level.player1.isBlockedRight = false;
         level.player1.jumpSound.start();
       }
       
