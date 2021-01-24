@@ -41,7 +41,8 @@ public class Level3 extends Level {
       new Crab(FRAME_WIDTH - 200, FRAME_HEIGHT - GROUND_HEIGHT - 282, 110),
       new Crab(FRAME_WIDTH + 180, FRAME_HEIGHT - GROUND_HEIGHT - 372, 110),
       new Crab(FRAME_WIDTH + 570, FRAME_HEIGHT - GROUND_HEIGHT - 302, 110),
-      new Crab(2*FRAME_WIDTH + 260, 268, 110)
+      new Crab(2*FRAME_WIDTH + 260, 268, 110),
+      new Crab(4*FRAME_WIDTH - 5, FRAME_HEIGHT - GROUND_HEIGHT - 199, 110)
     };
 
     this.bees = new Bee[] {
@@ -50,7 +51,8 @@ public class Level3 extends Level {
       new Bee(3062, FRAME_HEIGHT - GROUND_HEIGHT - 118, 70),
       new Bee(3142, FRAME_HEIGHT - GROUND_HEIGHT - 118, 70),
       new Bee(3222, FRAME_HEIGHT - GROUND_HEIGHT - 118, 70),
-      new Bee(4*FRAME_WIDTH + 373, FRAME_HEIGHT - GROUND_HEIGHT - 450, 80),
+      new Bee(4*FRAME_WIDTH + 375, FRAME_HEIGHT - GROUND_HEIGHT - 450, 80),
+      new Bee(4*FRAME_WIDTH + 475, 480, 75)
     };
 
     this.flyers = new Flyer[] {
@@ -62,6 +64,8 @@ public class Level3 extends Level {
       new Flyer(FRAME_WIDTH + 58, 600, 630),
       new Flyer(3*FRAME_WIDTH - 295, 350, 110),
       new Flyer(3*FRAME_WIDTH + 760, 212, 100),
+      new Flyer(4*FRAME_WIDTH + 400, 550, 500),
+      new Flyer(4*FRAME_WIDTH + 700, 550, 500),
     };
     
     this.enemies = new Enemy[][] {goombas, crabs, bees, flyers};
@@ -74,7 +78,8 @@ public class Level3 extends Level {
       {2*FRAME_WIDTH - 200, 180, 245, 65},
       {2*FRAME_WIDTH + 140, 300, 245, 65},
       {3*FRAME_WIDTH + 655, FRAME_HEIGHT - GROUND_HEIGHT - 365, 245, 65},
-      {4*FRAME_WIDTH + 274, FRAME_HEIGHT - GROUND_HEIGHT - 304, 278, 65},
+      {4*FRAME_WIDTH + 274, FRAME_HEIGHT - GROUND_HEIGHT - 304, 245, 65},
+      {4*FRAME_WIDTH + 635, FRAME_HEIGHT - GROUND_HEIGHT - 200, 245, 65},
     };
 
     this.icePlatforms = new int[][] {
@@ -86,6 +91,7 @@ public class Level3 extends Level {
       {3*FRAME_WIDTH - 55, FRAME_HEIGHT - GROUND_HEIGHT - 140, 278, 65},
       {3*FRAME_WIDTH + 275, FRAME_HEIGHT - GROUND_HEIGHT - 230, 278, 65},
       {4*FRAME_WIDTH - 125, FRAME_HEIGHT - GROUND_HEIGHT - 167, 278, 65},
+      {5*FRAME_WIDTH - 130, FRAME_HEIGHT - GROUND_HEIGHT - 340, 245, 65},
     };
     
     // Wall Properties
@@ -96,7 +102,7 @@ public class Level3 extends Level {
       {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT - GROUND_HEIGHT + 5}
     };
     
-    this.spikes = new int[21][4];
+    this.spikes = new int[17][4];
     // Initalize spikes
     this.spikes[0][0] = 2*FRAME_WIDTH - 425;
     this.spikes[1][0] = 2*FRAME_WIDTH + 30;
@@ -121,7 +127,7 @@ public class Level3 extends Level {
     this.coins = new Rectangle[] {
       new Rectangle(FRAME_WIDTH + 175, 450, 60, 58),
       new Rectangle(2*FRAME_WIDTH - 115, 90, 60, 58),
-      new Rectangle(200, 200, 60, 58)
+      new Rectangle(5*FRAME_WIDTH - 115, 525, 60, 58)
     };
   }
 }
