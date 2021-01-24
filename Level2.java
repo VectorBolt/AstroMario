@@ -111,8 +111,8 @@ public class Level2 extends Level {
         // End wall
         {7*FRAME_WIDTH, 0, 1000, FRAME_HEIGHT},
         // Other Walls
-        {1620, 75, 100, 630},
-        {2080, -500, 100, 860}
+        {1620, 75, 90, 546},
+        {2075, -500, 90, 873}
     };
 
     this.spikes = new int[][] {
