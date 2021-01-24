@@ -9,6 +9,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+// Sound Imports
+import java.io.File;
+import javax.sound.sampled.*;
 
 public class Main {
   // Window Properties
@@ -28,7 +31,11 @@ public class Main {
   static boolean victoryMenu = false;
   static boolean infoPage = false;
   static boolean[] buttonSelected = {false, false};
-  
+
+  // Music
+  static AudioInputStream audioStream;
+  static Clip music;
+
   // MAIN METHOD
   public static void main(String[] args) {
     // Window and canvas
@@ -40,8 +47,18 @@ public class Main {
     canvas.addKeyListener(keyListener);
     window.setResizable(false);
     window.setVisible(true);
-    
+
+    // load and play the music
+    try {
+      File audioFile = new File("sounds/music.wav");
+      audioStream = AudioSystem.getAudioInputStream(audioFile);
+      music = AudioSystem.getClip();
+      music.open(audioStream);
+    } catch (Exception ex){} 
+
     // Main menu
+    music.start();
+    music.loop(Clip.LOOP_CONTINUOUSLY); 
     while (gameOpen) {
       do {
         window.repaint();
@@ -66,7 +83,7 @@ public class Main {
         levels[1] = new Level2(window);
         died = levels[1].myMain();    
       } while (died);
-      
+
       // Level 3
       do {
         levels[2] = new Level3(window);
