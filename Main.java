@@ -68,12 +68,10 @@ public class Main {
       } while (died);
       
       // Level 3
-      
       do {
         levels[2] = new Level3(window);
         died = levels[2].myMain();
       } while (died);
-      
       victoryMenu = true;
       
       // Victory menu
@@ -113,7 +111,7 @@ public class Main {
       if (infoPage) {
         // Write extra info
         g.setColor(lightBlue);
-        g.setFont(new Font("TimesRoman", Font.ITALIC, 75));
+        g.setFont(new Font("Helvetica", Font.ITALIC, 75));
         g.drawString("Creators:", FRAME_WIDTH/2 - 155, FRAME_HEIGHT/2 + 165);
         g.setFont(new Font("Helvetica", Font.BOLD, 30));
         g.drawString("Press ENTER to go back to the menu", FRAME_WIDTH/2 - 275, 60);
@@ -129,9 +127,9 @@ public class Main {
         g.drawString("Press 1, 2, and 3 to switch guns", FRAME_WIDTH/2 - 530, FRAME_HEIGHT/2 + 25);
       }
       else if(victoryMenu) {
-        g.setColor(lightRed);
-        g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT); 
         g.setColor(lightBlue);
+        g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT); 
+        g.setColor(Color.BLACK);
         g.setFont(new Font("TimesRoman", Font.ITALIC, 100));
         g.drawString("You beat the game!", FRAME_WIDTH/2 - 395, 270);
         g.setFont(new Font("Helvetica", Font.BOLD, 30));

@@ -135,9 +135,9 @@ public class Level1 extends Level {
     };
     
     this.coins = new Rectangle[] {
-      new Rectangle(1832, 560, 60, 58),
-      new Rectangle(300, 300, 60, 58),
-      new Rectangle(200, 200, 60, 58)
+      new Rectangle(3650, 480, 60, 58),
+      new Rectangle(4675, 495, 60, 58),
+      new Rectangle(5*FRAME_WIDTH + 45, 450, 60, 58)
     };
     
   }
