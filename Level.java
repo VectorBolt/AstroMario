@@ -92,7 +92,7 @@ public abstract class Level {
   // Sound Effects
   AudioInputStream audioStream;
   Clip coinSound;
-
+  
   
   // Game
   boolean inPlay;
@@ -103,8 +103,8 @@ public abstract class Level {
   
 //---------------------------------------------------------------------------------
   
-  // MAIN METHOD
-  public boolean myMain() {
+  // PLAY LEVEL
+  public boolean playLevel() {
     
     // Background Properties
     this.background1X = 0;
@@ -132,7 +132,7 @@ public abstract class Level {
     for (int i = 0; i < coins.length; i++) {
       this.coinsCollected[i] = false;
     }
-
+    
     
     // Images and Sounds
     try {
@@ -174,7 +174,7 @@ public abstract class Level {
     this.window.remove(this.canvas);
     
     return this.failedLevel;
-  }
+  }  // playLevel method end
   
 //---------------------------------------------------------------------------------
   
@@ -268,13 +268,13 @@ public abstract class Level {
         this.player1.vY = 0;
         this.jumpCount = 0;
         this.player1.isJumping = false;
-
+        
         // Reset Ice Physics
         this.player1.isOnIce = false;
         if (!this.player1.isWalking) {
           this.player1.vX = 0;
         }
-
+        
       }
       
       this.platformCollision(this.platforms, false);
@@ -350,7 +350,7 @@ public abstract class Level {
     else if (this.background1X >= this.FRAME_WIDTH) {
       this.background1X = this.background2X - this.background2W - this.player1.vX;
     }
-
+    
     this.background2X -= this.player1.vX - this.collisionShift;
     if (this.background2X + this.background2W <= 0) {
       this.background2X = this.background1X + this.background1W;
@@ -358,7 +358,7 @@ public abstract class Level {
     else if (this.background2X >= this.FRAME_WIDTH) {
       this.background2X = this.background1X - this.background1W;
     }
-
+    
   } // moveBackground method end
   
   
@@ -480,7 +480,7 @@ public abstract class Level {
           this.jumpCount = 0;
           this.player1.isJumping = false;
           this.player1.isOnIce = false; // reset to false before checking if the player is on ice
-
+          
           // Reset Ice Physics before checking if the player is on ice
           this.player1.isOnIce = false;
           if (isIcy) {
@@ -511,21 +511,21 @@ public abstract class Level {
     // Reset
     this.player1.isBlockedRight = false;
     this.player1.isBlockedLeft = false;
-
+    
     for (int i = 0; i < this.walls.length; i++) {
       // If player hits wall from the side
       if (this.player1.y + this.player1.h > this.walls[i][1] && this.player1.y < this.walls[i][1] + this.walls[i][3] + 1
             && this.player1.x + this.player1.w >= this.walls[i][0] && this.player1.x <= this.walls[i][0] + this.walls[i][2]) {
         // If player collides with wall on right side of wall
         if (this.player1.x <= this.walls[i][0] + this.walls[i][2] && !this.player1.facingRight
-            && player1.x >= (this.walls[i][0] + this.walls[i][0] + this.walls[i][2])/2) {
+              && player1.x >= (this.walls[i][0] + this.walls[i][0] + this.walls[i][2])/2) {
           this.player1.vX = 0;
           this.player1.isBlockedLeft = true;
           this.collisionShift = this.player1.x - (this.walls[i][0] + this.walls[i][2]);
         }
         // If player collides with wall on left side of wall
         else if (this.player1.x + this.player1.w >= this.walls[i][0] && this.player1.facingRight
-            && this.player1.x <= (this.walls[i][0] + this.walls[i][0] + this.walls[i][2])/2) {
+                   && this.player1.x <= (this.walls[i][0] + this.walls[i][0] + this.walls[i][2])/2) {
           this.player1.vX = 0;
           this.player1.isBlockedRight = true;
           this.collisionShift = (this.player1.x + this.player1.w) - this.walls[i][0];
@@ -533,14 +533,14 @@ public abstract class Level {
       }
       
     }
-
+    
     if (this.player1.isWalking && this.player1.facingRight && !this.player1.isBlockedRight) {
       this.player1.vX = this.player1.speed;
     }
     else if (this.player1.isWalking && !this.player1.facingRight && !this.player1.isBlockedLeft) {
       this.player1.vX = -this.player1.speed;
     }
-
+    
   } // wallCollision method end
   
   /**
@@ -715,18 +715,18 @@ public abstract class Level {
       g.setFont(new Font("Helvetica", Font.BOLD, 30));
       g.drawString("Bullets: " + Integer.toString(level.curGun.numBullets - level.curGun.curBullet), 3*level.FRAME_WIDTH/4 + 100, 60);
       g.drawString("Health: " + Integer.toString(level.player1.health), 60, 60);
-
+      
       // Draw hearts remaining
       for (int h = 0; h < level.player1.health; h++) {
         g.drawImage(level.playerHearts, level.FRAME_WIDTH/8 - 91 + 40*h, 75, this);
       }
       // Draw coins collected
       for (int i = 0; i < coinsCollected.length; i++) {
-         if (coinsCollected[i]) {
-           g.drawImage(level.smallCoinImage, 3*level.FRAME_WIDTH/4 + 115 + 40*i, 75, this);
-         }
+        if (coinsCollected[i]) {
+          g.drawImage(level.smallCoinImage, 3*level.FRAME_WIDTH/4 + 115 + 40*i, 75, this);
+        }
       }
-
+      
       if (level.reloading) {
         g.drawString("Reloading...", level.FRAME_WIDTH/2 - 93, 60);
       }
@@ -775,50 +775,43 @@ public abstract class Level {
     }
     
     public void keyPressed(KeyEvent e) {
-      int key = e.getKeyCode();
-      
-      // Horizontal Movement
-      if ((key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) && !level.player1.isBlockedLeft) {
-        try {
+      try {
+        int key = e.getKeyCode();
+        
+        // Horizontal Movement
+        if ((key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) && !level.player1.isBlockedLeft) {
           level.player1.vX = -level.player1.speed;
           level.player1.facingRight = false;
           level.player1.isWalking = true;
-        } catch (Exception ex) {}
-      }
-      
-      else if ((key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) && !level.player1.isBlockedRight)  {
-        try {
+        }
+        
+        else if ((key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) && !level.player1.isBlockedRight)  {
           level.player1.vX = level.player1.speed;
           level.player1.facingRight = true;
           level.player1.isWalking = true;
-        } catch (Exception ex) {}
-      }
-      
-      // Jump
-      if ((key == KeyEvent.VK_W || key == KeyEvent.VK_UP ) && jumpCount < 2) {
-        try {
+        }
+        
+        // Jump
+        if ((key == KeyEvent.VK_W || key == KeyEvent.VK_UP ) && jumpCount < 2) {
           level.player1.vY = (double)level.player1.jumpSpeed;
           level.player1.isJumping = true;
-        
+          
           // Only increment jump counter if the player is not in water
           if (!level.player1.isSwimming) {
             level.jumpCount++;
           }
           level.player1.jumpSound.start();
-        } catch (Exception ex) {}
-      }
-      
-      // Fire
-      if (key == KeyEvent.VK_SPACE && !level.reloading && level.curGun.curBullet < level.curGun.numBullets) {
-        try {
+        }
+        
+        // Fire
+        if (key == KeyEvent.VK_SPACE && !level.reloading && level.curGun.curBullet < level.curGun.numBullets) {  
           level.shotGap[0] += 20;
           level.curGun.isShooting = true;
-        } catch (Exception ex) {}
-      }
-      
-      // Reload
-      if (key == KeyEvent.VK_K && level.curGun.numBullets - level.curGun.curBullet != level.curGun.numBullets && !level.reloading && !level.curGun.isShooting) {
-        try {
+        }
+        
+        
+        // Reload
+        if (key == KeyEvent.VK_K && level.curGun.numBullets - level.curGun.curBullet != level.curGun.numBullets && !level.reloading && !level.curGun.isShooting) {
           level.reloadDelay = new Timer(curGun.reloadDelay, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
               level.reloading = curGun.reload(player1);
@@ -827,33 +820,33 @@ public abstract class Level {
           });
           level.reloadDelay.start();
           level.reloading = true;
-        } catch (Exception ex) {}
-      }
-      
-      //Switch to basic gun
-      if (key == KeyEvent.VK_1 && level.curGun != level.basicGun && !level.reloading) {
-        level.curGun = level.basicGun;
-      }
-      //Switch to energy gun
-      else if (key == KeyEvent.VK_2 && level.curGun != level.energyGun && !level.reloading) {
-        level.curGun = level.energyGun;
-      }
-      //Switch to machine gun
-      else if (key == KeyEvent.VK_3 && level.curGun != level.machineGun && !level.reloading) {
-        level.curGun = level.machineGun;
-      }
-      
-      // If player is in menu
-      else if (level.failedLevel) {
-        if (key == KeyEvent.VK_SPACE) {
-          level.endedLevel = true;
         }
-      }
-      else if (level.wonLevel) {
-        if (key == KeyEvent.VK_SPACE) {
-          level.endedLevel = true;
+        
+        //Switch to basic gun
+        if (key == KeyEvent.VK_1 && level.curGun != level.basicGun && !level.reloading) {
+          level.curGun = level.basicGun;
         }
-      }
+        //Switch to energy gun
+        else if (key == KeyEvent.VK_2 && level.curGun != level.energyGun && !level.reloading) {
+          level.curGun = level.energyGun;
+        }
+        //Switch to machine gun
+        else if (key == KeyEvent.VK_3 && level.curGun != level.machineGun && !level.reloading) {
+          level.curGun = level.machineGun;
+        }
+        
+        // If player is in menu
+        if (level.failedLevel) {
+          if (key == KeyEvent.VK_SPACE) {
+            level.endedLevel = true;
+          }
+        }
+        else if (level.wonLevel) {
+          if (key == KeyEvent.VK_SPACE) {
+            level.endedLevel = true;
+          }
+        }
+      } catch (Exception ex) {}
     } // end keyPressed
     
     public void keyReleased(KeyEvent e) {
@@ -885,23 +878,23 @@ public abstract class Level {
     
     public void keyTyped(KeyEvent e) {}
   }  //KeyListener class end
-
+  
 //---------------------------------------------------------------------------------
   
   // SOUND EFFECT LISTENER
-   class CoinListener implements LineListener {
-     Level level;
-
-     public CoinListener(Level level) {
-       super();
-       this.level = level;
-     }
-
-     public void update(LineEvent event) {
-       if (event.getType() == LineEvent.Type.STOP) {
-         level.coinSound.flush();              // clear the buffer with audio data
-         level.coinSound.setFramePosition(0);  // prepare to start from the beginning
-       }
-     }
-   } 
-}  //Level class end
+  class CoinListener implements LineListener {
+    Level level;
+    
+    public CoinListener(Level level) {
+      super();
+      this.level = level;
+    }
+    
+    public void update(LineEvent event) {
+      if (event.getType() == LineEvent.Type.STOP) {
+        level.coinSound.flush();              // clear the buffer with audio data
+        level.coinSound.setFramePosition(0);  // prepare to start from the beginning
+      }
+    }
+  }  // MyKeyListerner class end
+}  // Level class end
