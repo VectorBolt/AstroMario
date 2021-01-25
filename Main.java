@@ -63,8 +63,8 @@ public class Main {
 
     // Keeping track of high score
     File saveFile = new File("SaveFile.txt");
-    PrintWriter output = new PrintWriter(saveFile); // Create File if not already existing
-    output.close();
+    saveFile.createNewFile(); // Creates a new file if it doesn't already exist
+    PrintWriter output; // Create File if not already existing
     Scanner read;
 
     // load music and background image 
