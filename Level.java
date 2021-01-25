@@ -455,7 +455,7 @@ public abstract class Level {
         }
       }
     } 
-  }
+  }  // energyGunBullets method end
   
   /**
    * platformCollision
