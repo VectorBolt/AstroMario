@@ -43,7 +43,7 @@ public class Main {
   static BufferedImage menuBackground;
 
   // MAIN METHOD
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     // Window and canvas
     window = new JFrame("Astro Mario");
     canvas = new GraphicsPanel();
@@ -82,19 +82,19 @@ public class Main {
       // Level 1
       do {
         levels[0] = new Level1(window);
-        died = levels[0].myMain();
+        died = levels[0].playLevel();
       } while (died);
       
       // Level 2
       do {
         levels[1] = new Level2(window);
-        died = levels[1].myMain();    
+        died = levels[1].playLevel();    
       } while (died);
 
       // Level 3
       do {
         levels[2] = new Level3(window);
-        died = levels[2].myMain();
+        died = levels[2].playLevel();
       } while (died);
       victoryMenu = true;
       
