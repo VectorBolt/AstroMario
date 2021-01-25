@@ -104,7 +104,7 @@ public abstract class Level {
 //---------------------------------------------------------------------------------
   
   // PLAY LEVEL
-  public boolean playLevel(int coinCount) {
+  public boolean playLevel() {
     
     // Background Properties
     this.background1X = 0;
@@ -167,7 +167,7 @@ public abstract class Level {
     
     this.window.setVisible(true);
     this.runGameLoop();
-    this.endLevel(coinCount, this.coinsCollected);
+    this.endLevel();
     
     this.canvas.removeKeyListener(this.keyListener);
     this.window.removeKeyListener(this.keyListener);
@@ -273,8 +273,7 @@ public abstract class Level {
         this.player1.isOnIce = false;
         if (!this.player1.isWalking) {
           this.player1.vX = 0;
-        }
-        
+        }        
       }
       
       this.platformCollision(this.platforms, false);
@@ -324,7 +323,7 @@ public abstract class Level {
   
 //---------------------------------------------------------------------------------
   
-  public void endLevel(int coinCount, boolean[] coinsCollected) {
+  public void endLevel() {
     while (!this.endedLevel) {
       // Display level end menu (for both deaths and beating the level)
       this.window.repaint();
@@ -332,16 +331,6 @@ public abstract class Level {
         Thread.sleep(20);
       } catch (Exception e) {}
     }
-    /*
-    if (this.wonLevel) {
-      for (int i = 0; i < coinsCollected.length; i++) {
-        if (coinsCollected[i]) {
-          coinCount++;
-        }
-      }
-    }
-    System.out.println(coinCount);
-    */
   } // endLevel method end
   
 //---------------------------------------------------------------------------------
