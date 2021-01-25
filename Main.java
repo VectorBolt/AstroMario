@@ -17,6 +17,9 @@ import java.awt.image.BufferedImage;
 // Sound Imports
 import java.io.File;
 import javax.sound.sampled.*;
+// Scanner and Printwriter
+import java.util.Scanner;
+import java.io.PrintWriter;
 
 public class Main {
   // Window Properties
@@ -42,6 +45,10 @@ public class Main {
   static Clip music;
   static BufferedImage menuBackground;
 
+  // Counting Coins
+  public static int coinCount;
+  public static int highScore;
+
   // MAIN METHOD
   public static void main(String[] args) throws Exception {
     // Window and canvas
@@ -53,6 +60,9 @@ public class Main {
     canvas.addKeyListener(keyListener);
     window.setResizable(false);
     window.setVisible(true);
+
+    // Keeping track of high score
+    File saveFile = new File("SaveFile.txt");
 
     // load music and background image 
     try {
@@ -67,6 +77,9 @@ public class Main {
     music.start();
     music.loop(Clip.LOOP_CONTINUOUSLY); 
     while (gameOpen) {
+      PrintWriter output = new PrintWriter(saveFile);
+      Scanner read = new Scanner(saveFile);
+      coinCount = 0;
       do {
         window.repaint();
         try {
@@ -82,21 +95,43 @@ public class Main {
       // Level 1
       do {
         levels[0] = new Level1(window);
-        died = levels[0].playLevel();
+        died = levels[0].playLevel(coinCount);
       } while (died);
+      for (int i = 0; i < levels[0].coinsCollected.length; i++) {
+        if (levels[0].coinsCollected[i]) {
+          coinCount++;
+        }
+      }
+      System.out.println(coinCount);
       
+      /*
       // Level 2
       do {
         levels[1] = new Level2(window);
-        died = levels[1].playLevel();    
+        died = levels[1].playLevel(coinCount);    
       } while (died);
 
       // Level 3
       do {
         levels[2] = new Level3(window);
-        died = levels[2].playLevel();
+        died = levels[2].playLevel(coinCount);
       } while (died);
-      victoryMenu = true;
+      */
+      victoryMenu = true; 
+
+      // Write high score
+      try {
+        highScore = read.nextInt();
+      } catch (Exception e) {
+        highScore = 0;
+      }
+      read.close();
+      if (coinCount > highScore) {
+        output.println(coinCount);
+        highScore = coinCount;
+      }
+      output.close();
+      
       
       // Victory menu
       window.add(canvas);
@@ -154,7 +189,10 @@ public class Main {
         g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT); 
         g.setColor(Color.BLACK);
         g.setFont(new Font("TimesRoman", Font.ITALIC, 100));
-        g.drawString("You beat the game!", FRAME_WIDTH/2 - 395, 270);
+        g.drawString("You beat the game!", FRAME_WIDTH/2 - 395, 205);
+        g.setFont(new Font("Courier", Font.BOLD, 40));
+        g.drawString("You collected " + coinCount + " out of 9 coins!", FRAME_WIDTH/5 + 15, 365);
+        g.drawString("Your high score is " + highScore + " out of 9 coins.", FRAME_WIDTH/6, 425);
         g.setFont(new Font("Helvetica", Font.BOLD, 30));
         g.drawString("Press SPACE to return to the menu", FRAME_WIDTH/2 - 260, 600);
       }
