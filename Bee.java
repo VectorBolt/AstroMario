@@ -1,3 +1,11 @@
+/**
+ * [Bee.java]
+ * This class represents a bee enemy
+ * It can only move up and down
+ * @author Avneesh Verma and Jeffrey Xu
+ * @version 1.0 January 14, 2020
+ */
+
 /* Imports */
 import java.awt.*;
 // Image imports
@@ -16,7 +24,7 @@ public class Bee extends Goomba {
     try {
       for (int i = 0; i < 2; i++) {
         this.images[i] = ImageIO.read(new File("images/bee" + i + ".png"));
-      };
+      }
     } catch (Exception e) {}
   }
 }

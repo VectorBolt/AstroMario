@@ -1,3 +1,11 @@
+/**
+ * [Flyer.java]
+ * This class represents a flyer enemy
+ * It can only move left and right.
+ * @author Avneesh Verma and Jeffrey Xu
+ * @version 1.0 January 14, 2020
+ */
+
 /* Imports */
 import java.awt.*;
 // Image imports

@@ -1,10 +1,9 @@
 /**
  * Level2.java
  * This file encodes the locations of all objects in Level 2.
- * @author Avneesh Verma
+ * @author Avneesh Verma and Jeffrey Xu
  * @version 1.0 January 24, 2020
  */
-
 
 /* Imports */
 import javax.swing.*;
@@ -152,14 +151,6 @@ public class Level2 extends Level {
           new Rectangle(7920, 192, 320, 192),
           new Rectangle(7920, 384, 320, 192),
           new Rectangle(7920, 428, 320, 192),
-          /*
-             new Rectangle(1620, 428, 320, 192),
-             new Rectangle(1940, 428, 320, 192),
-             new Rectangle(1620, 236, 320, 192),
-             new Rectangle(1940, 236, 320, 192),
-             new Rectangle(1620, 44, 320, 192),
-             new Rectangle(1940, 44, 320, 192),
-           */
     };
 
     this.coins = new Rectangle[] {
@@ -167,7 +158,5 @@ public class Level2 extends Level {
           new Rectangle(3323, 60, 60, 58),
           new Rectangle(6089, 530, 60, 58)
     };
-
   } // End of Constructor
 } // End of Level2 class
-

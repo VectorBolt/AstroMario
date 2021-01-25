@@ -139,6 +139,5 @@ public class Level1 extends Level {
       new Rectangle(4675, 495, 60, 58),
       new Rectangle(5*FRAME_WIDTH + 45, 450, 60, 58)
     };
-    
   }
 }
