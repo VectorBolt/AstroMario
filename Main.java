@@ -9,6 +9,11 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+// Image imports
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 // Sound Imports
 import java.io.File;
 import javax.sound.sampled.*;
@@ -32,9 +37,10 @@ public class Main {
   static boolean infoPage = false;
   static boolean[] buttonSelected = {false, false};
 
-  // Music
+  // Music and Background Image
   static AudioInputStream audioStream;
   static Clip music;
+  static BufferedImage menuBackground;
 
   // MAIN METHOD
   public static void main(String[] args) {
@@ -48,8 +54,9 @@ public class Main {
     window.setResizable(false);
     window.setVisible(true);
 
-    // load and play the music
+    // load music and background image 
     try {
+      menuBackground = ImageIO.read(new File("images/menubackground.jpg"));
       File audioFile = new File("sounds/music.wav");
       audioStream = AudioSystem.getAudioInputStream(audioFile);
       music = AudioSystem.getClip();
@@ -122,8 +129,7 @@ public class Main {
       Color lightRed = new Color(222, 23, 56);
       Color lightBlue = new Color(135, 206, 235);
       // Fill background with dark purple
-      g.setColor(darkPurple);
-      g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT); 
+      g.drawImage(menuBackground, 0, 0, this);
       
       if (infoPage) {
         // Write extra info
@@ -155,7 +161,7 @@ public class Main {
       else {
         // Draw play button
         if (!buttonSelected[0]) {
-          g.setColor(darkYellow);
+          g.setColor(lightBlue);
         }
         else {
           g.setColor(lightRed);
@@ -164,7 +170,7 @@ public class Main {
         
         // Draw info button
         if (!buttonSelected[1]) {
-          g.setColor(darkYellow);
+          g.setColor(lightBlue);
         }
         else {
           g.setColor(lightRed);
@@ -172,7 +178,7 @@ public class Main {
         g.fillRect(FRAME_WIDTH/2 + 130, FRAME_HEIGHT/2 + 60, 220, 130);
         
         // Draw text
-        g.setColor(lightBlue);
+        g.setColor(Color.WHITE);
         g.setFont(new Font("TimesRoman", Font.ITALIC, 125));
         g.drawString("Astro Mario", FRAME_WIDTH/2 - 305, FRAME_HEIGHT/2 - 100);
         g.setFont(new Font("Courier", Font.BOLD, 50));
