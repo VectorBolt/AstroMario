@@ -33,7 +33,7 @@ public class Main {
   
   // Level end conditions and menu
   static boolean gameOpen = true;
-  static Level[] levels = new Level[4];
+  static Level[] levels = new Level[3];
   static boolean died;
   static boolean inMenu = true;
   static boolean victoryMenu = false;
@@ -112,9 +112,11 @@ public class Main {
       } while (died);
 
       // Coin Counting
-      for (int i = 0; i < levels[0].coinsCollected.length; i++) {
-        if (levels[0].coinsCollected[i]) {
-          coinCount++;
+      for (int curLevel = 0; curLevel < levels.length; curLevel++) {
+        for (int coin = 0; coin < levels[0].coinsCollected.length; coin++) {
+          if (levels[curLevel].coinsCollected[coin]) {
+            coinCount++;
+          }
         }
       }
       victoryMenu = true; 
