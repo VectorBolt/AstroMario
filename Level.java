@@ -360,7 +360,6 @@ public abstract class Level {
     
   } // moveBackground method end
   
-  
   /**
    * moveBullets
    * Moves bullets, detects enemy hits, and detects exit screen
@@ -418,8 +417,7 @@ public abstract class Level {
       }
     }
   }  // moveBullets method end
-  
-  
+   
   /**
    * energygunBullets
    * Shoots energy gun beam
@@ -456,8 +454,7 @@ public abstract class Level {
           this.energyGun.isShooting = false;
         }
       }
-    }
-    
+    } 
   }
   
   /**
@@ -530,7 +527,6 @@ public abstract class Level {
           this.collisionShift = (this.player1.x + this.player1.w) - this.walls[i][0];
         }
       }
-      
     }
     
     if (this.player1.isWalking && this.player1.facingRight && !this.player1.isBlockedRight) {
@@ -539,7 +535,6 @@ public abstract class Level {
     else if (this.player1.isWalking && !this.player1.facingRight && !this.player1.isBlockedLeft) {
       this.player1.vX = -this.player1.speed;
     }
-    
   } // wallCollision method end
   
   /**

@@ -136,7 +136,6 @@ public class Main {
       }
       output.close();
       
-      
       // Victory menu
       window.add(canvas);
       canvas.addKeyListener(keyListener);
