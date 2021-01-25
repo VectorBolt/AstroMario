@@ -63,6 +63,9 @@ public class Main {
 
     // Keeping track of high score
     File saveFile = new File("SaveFile.txt");
+    PrintWriter output = new PrintWriter(saveFile); // Create File if not already existing
+    output.close();
+    Scanner read;
 
     // load music and background image 
     try {
@@ -73,13 +76,11 @@ public class Main {
       music.open(audioStream);
     } catch (Exception ex){} 
 
-    // Main menu
+    // Play Game
     music.start();
     music.loop(Clip.LOOP_CONTINUOUSLY); 
     while (gameOpen) {
-      PrintWriter output = new PrintWriter(saveFile);
-      Scanner read = new Scanner(saveFile);
-      coinCount = 0;
+      coinCount = 0; // Reset Coin Counter
       do {
         window.repaint();
         try {
@@ -97,14 +98,7 @@ public class Main {
         levels[0] = new Level1(window);
         died = levels[0].playLevel(coinCount);
       } while (died);
-      for (int i = 0; i < levels[0].coinsCollected.length; i++) {
-        if (levels[0].coinsCollected[i]) {
-          coinCount++;
-        }
-      }
-      System.out.println(coinCount);
       
-      /*
       // Level 2
       do {
         levels[1] = new Level2(window);
@@ -116,16 +110,24 @@ public class Main {
         levels[2] = new Level3(window);
         died = levels[2].playLevel(coinCount);
       } while (died);
-      */
+
+      // Coin Counting
+      for (int i = 0; i < levels[0].coinsCollected.length; i++) {
+        if (levels[0].coinsCollected[i]) {
+          coinCount++;
+        }
+      }
       victoryMenu = true; 
 
       // Write high score
+      read = new Scanner(saveFile);
       try {
         highScore = read.nextInt();
       } catch (Exception e) {
         highScore = 0;
       }
       read.close();
+      output = new PrintWriter(saveFile);
       if (coinCount > highScore) {
         output.println(coinCount);
         highScore = coinCount;

@@ -332,16 +332,6 @@ public abstract class Level {
         Thread.sleep(20);
       } catch (Exception e) {}
     }
-    /*
-    if (this.wonLevel) {
-      for (int i = 0; i < coinsCollected.length; i++) {
-        if (coinsCollected[i]) {
-          coinCount++;
-        }
-      }
-    }
-    System.out.println(coinCount);
-    */
   } // endLevel method end
   
 //---------------------------------------------------------------------------------
